@@ -1,0 +1,95 @@
+###
+//INSCRIPTION
+POST http://localhost:8080/api/inscription
+Content-Type: application/json
+
+{
+  "username" : "khalilbaidouri@gmail.com",
+  "numero" : "0654324622",
+  "password" : "Qwerty@123"
+}
+###
+// CONNEXION
+###
+POST http://localhost:8080/api/connexion
+Content-Type: application/json
+
+{
+  "email" : "manager@gmail.com",
+  "password" : "manager"
+}
+###
+
+###
+// DEPOSER UNE AVIS
+POST http://localhost:8080/api/avis
+Content-Type: application/json
+Authorization: Bearer: eyJhbGciOiJIUzI1NiJ9.eyJwYXNzd29yZCI6IiQyYSQxMCROSHQ2cFZzUG9WSzV5cFk2ME5xWmNlYVQvTEZjWDI5MlNWMFZPOHhqVVJKMDB2b1JTa05jLiIsImV4cCI6MTc1MjI5MDg1NSwidXNlcm5hbWUiOiJtYW5hZ2VyQGdtYWlsLmNvbSIsInN1YiI6Im1hbmFnZXJAZ21haWwuY29tIn0.jGRSxMt6f_ctVQKWcTZwi9dq9rUlS10kZYgWdZHGHi4
+
+{
+   "message" : "khalil 5 "
+}
+###
+
+###
+// AFFICHER MES INFORMATIONS
+GET http://localhost:8080/api/mesInfo
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBnbWFpbC5jb20iLCJ1c2VybmFtZSI6ImFkbWluQGdtYWlsLmNvbSIsImV4cCI6MTc1MjI4OTgzNywicGFzc3dvcmQiOiIkMmEkMTAkMDF6STdyUTRQV3pQOHJzLzA1cmVQTzV0LzlSRVpHM0ltVG1oOXBpcGdBZ2tUMVBLd1hvMnEifQ.AtnC9XJY0LiOQbikFU8WEetIUK0vSus6RZufIEMRQKk
+
+{
+
+}
+###
+
+###
+// REFRESH TOKEN
+POST http://localhost:8080/api/refreshToken
+Content-Type: application/json
+
+{
+  "token" : "f4b7d983-aea6-4b32-a3c3-cf86c35aebca"
+}
+###
+###
+// ALTER PASSWORD
+
+POST http://localhost:8080/api/alterPassword
+Content-Type: application/json
+
+{
+  "username": "khalilbaidouri97@gmail.com"
+}
+###
+
+###
+// NEW PASSWORD
+
+POST http://localhost:8080/api/alterPassword
+Content-Type: application/json
+
+{
+    "username" : "khalilbaidouri97@gmail.com",
+    "code" : "367508",
+    "password" :"Qwerty@123"
+}
+
+###
+
+###
+// Activation
+POST http://localhost:8080/api/activation
+Content-Type: application/json
+
+{
+  "code" : "367508 "
+}
+###
+
+
+###
+//AVIS
+GET http://localhost:8080/api/avis
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBnbWFpbC5jb20iLCJ1c2VybmFtZSI6ImFkbWluQGdtYWlsLmNvbSIsImV4cCI6MTc1MjI2MzAxNywicGFzc3dvcmQiOiIkMmEkMTAkMDF6STdyUTRQV3pQOHJzLzA1cmVQTzV0LzlSRVpHM0ltVG1oOXBpcGdBZ2tUMVBLd1hvMnEifQ.Ufo1m5ICuNL6oVSMAkXkmJx31ypReoSx06V1-LPauEY
+###
