@@ -13,9 +13,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import spring.security.avis.DTO.AuthDto;
 import spring.security.avis.Securite.JwtService;
+import spring.security.avis.Service.InterventionService;
 import spring.security.avis.Service.UserService;
+import spring.security.avis.entity.Intervention;
 import spring.security.avis.entity.User;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -26,10 +29,12 @@ public class UserController {
     private final UserService userService;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
-    public UserController(UserService userService, AuthenticationManager authenticationManager, JwtService jwtService) {
+    private final InterventionService interventionService;
+    public UserController(UserService userService, AuthenticationManager authenticationManager, JwtService jwtService, InterventionService interventionService) {
         this.userService = userService;
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
+        this.interventionService = interventionService;
     }
 
     @PostMapping(path = "/inscription")
@@ -83,4 +88,6 @@ public class UserController {
     public void newPassword(@RequestBody Map<String,String> parametre) {
         this.userService.newPassword(parametre);
     }
+
+
 }

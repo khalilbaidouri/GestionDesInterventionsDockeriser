@@ -5,9 +5,14 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import spring.security.avis.DTO.AccepterDemandeRequest;
+import spring.security.avis.Enum.Priorite;
 import spring.security.avis.Service.DemandeInterventionService;
 import spring.security.avis.entity.DemandeIntervention;
 import spring.security.avis.entity.Intervention;
+
+import java.nio.file.AccessDeniedException;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author $ {USERS}
@@ -31,7 +36,7 @@ public class DemandeController {
     public ResponseEntity<Void> modifierDemande(@PathVariable("idIntervention") Long idDemande,
                                                 @RequestBody DemandeIntervention demandeIntervention) {
         demandeInterventionService.modifierDemande(idDemande, demandeIntervention);
-        return ResponseEntity.ok().build(); // HTTP 200 OK sans corps
+        return ResponseEntity.ok().build();
     }
 
 
@@ -42,4 +47,13 @@ public class DemandeController {
         Intervention intervention = demandeInterventionService.accepterDemande(idDemande, request.dateDebut(), request.dateEcheance());
         return ResponseEntity.ok(intervention);
     }
+
+    @GetMapping("/afficherLesInterventionsParEtat")
+    public ResponseEntity<List<DemandeIntervention>> afficherLesInterventionsParPriorite(
+            @RequestParam Priorite priorite) throws AccessDeniedException {
+
+        List<DemandeIntervention> demandeInterventions = demandeInterventionService.getDemandeInterventionByPriorite(priorite);
+        return ResponseEntity.ok(demandeInterventions);
+    }
+
 }

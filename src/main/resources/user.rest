@@ -118,3 +118,36 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBnbWFpbC5jb20iLCJ1c
   "localisation": "hhhh",
   "typeIntervention": "hhhhh"
 }
+
+###
+//GET INTERVENTION PAR PRIORITE
+
+GET http://localhost:8080/api/interventions/afficherLesInterventionsParPriotite?priorite=HAUTE
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJwYXNzd29yZCI6IiQyYSQxMCRxa0Nab211NzB4WmRieVBXU0Y3a1dlOENmS0xPZHN1TGo0b0JCRWFzQ0RpblJPS2xxejQ0cSIsImV4cCI6MTc1MzQ0NTg2OCwidXNlcm5hbWUiOiJhZG1pbkBnbWFpbC5jb20iLCJzdWIiOiJhZG1pbkBnbWFpbC5jb20ifQ.4xqP3d1nJrUGBwqFkc7-7M-gBRv_TniXTCtfOMEUFkA
+
+{
+
+}
+
+###
+//GET DEMANDE PAR ETAT
+
+GET http://localhost:8080/api/afficherLesInterventionsParEtat?priorite=HAUTE
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluQGdtYWlsLmNvbSIsImV4cCI6MTc1MzQ0NzY5OSwicGFzc3dvcmQiOiIkMmEkMTAkcWtDWm9tdTcweFpkYnlQV1NGN2tXZThDZktMT2RzdUxqNG9CQkVhc0NEaW5ST0tscXo0NHEiLCJzdWIiOiJhZG1pbkBnbWFpbC5jb20ifQ.ZxPADExWVb5SAW5pwzonQ-UQ4Zuf1YGqItejFw-hFes
+
+{}
+
+
+###
+//GET INTERVENTION PAR STATUT
+
+GET http://localhost:8080/api/interventions/afficherLesInterventionsParStatut?statut=EN_COURS
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluQGdtYWlsLmNvbSIsImV4cCI6MTc1MzQ0ODQ5NiwicGFzc3dvcmQiOiIkMmEkMTAkcWtDWm9tdTcweFpkYnlQV1NGN2tXZThDZktMT2RzdUxqNG9CQkVhc0NEaW5ST0tscXo0NHEiLCJzdWIiOiJhZG1pbkBnbWFpbC5jb20ifQ.XOVrWmMVSP8q79iIJuTH5iBSJaSKAXoTK93jKYx_ag8
+
+{
+
+}
+

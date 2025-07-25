@@ -1,6 +1,8 @@
 package spring.security.avis.Service;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -17,12 +19,10 @@ import spring.security.avis.entity.Role;
 import spring.security.avis.entity.User;
 import spring.security.avis.entity.Validation;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * @author $ {USERS}
@@ -115,7 +115,7 @@ public class UserService implements UserDetailsService {
 
 
 
-    public Optional<User> ingenieurDispo(LocalDateTime dateDebut, LocalDateTime dateEcheance) {
+  public Optional<User> ingenieurDispo(LocalDateTime dateDebut, LocalDateTime dateEcheance) {
         List<User> ingenieurs = userRepo.findByRole(TypeRole.INGENIEUR);
 
         for (User ingenieur : ingenieurs) {
@@ -133,5 +133,14 @@ public class UserService implements UserDetailsService {
 
         return Optional.empty();
     }
+
+    public static long calculerDureeEnMinutes(LocalDateTime dateDebut, LocalDateTime dateFin) {
+        if (dateDebut != null && dateFin != null && !dateFin.isBefore(dateDebut)) {
+            return Duration.between(dateDebut, dateFin).toMinutes();
+        } else {
+            throw new IllegalArgumentException("Les dates sont nulles ou la date de fin est avant la date de début.");
+        }
+    }
+
 
 }

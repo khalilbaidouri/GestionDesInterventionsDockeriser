@@ -51,4 +51,6 @@ public interface DemandeInterventionRepository extends JpaRepository<DemandeInte
                                                                 @Param("typeIntervention") String typeIntervention,
                                                                 @Param("priorite") Priorite priorite
     );
+
+
 }

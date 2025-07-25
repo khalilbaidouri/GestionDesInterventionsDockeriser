@@ -23,8 +23,8 @@ public interface HistoriqueInterventionRepository extends JpaRepository<Historiq
 
     List<HistoriqueIntervention> findByUtilisateurId(Long utilisateurId);
 
-    List<HistoriqueIntervention> findByAction(TypeAction action);
-
+    //List<HistoriqueIntervention> findByAction(TypeAction action);
+/*
     @Query("SELECT h FROM HistoriqueIntervention h WHERE h.dateAction BETWEEN :debut AND :fin")
     List<HistoriqueIntervention> findByDateActionBetween(@Param("debut") LocalDateTime debut,
                                                          @Param("fin") LocalDateTime fin);
@@ -41,5 +41,5 @@ public interface HistoriqueInterventionRepository extends JpaRepository<Historiq
     long countByUtilisateurIdAndAction(@Param("userId") Long userId, @Param("action") TypeAction action);
 
     @Query("SELECT h FROM HistoriqueIntervention h WHERE h.ipAddress = :ipAddress ORDER BY h.dateAction DESC")
-    List<HistoriqueIntervention> findByIpAddressOrderByDateActionDesc(@Param("ipAddress") String ipAddress);
+    List<HistoriqueIntervention> findByIpAddressOrderByDateActionDesc(@Param("ipAddress") String ipAddress);*/
 }

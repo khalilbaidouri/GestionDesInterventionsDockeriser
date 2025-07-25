@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import spring.security.avis.Enum.Priorite;
 import spring.security.avis.Enum.StatutIntervention;
 import spring.security.avis.entity.DemandeIntervention;
 import spring.security.avis.entity.Intervention;
@@ -19,10 +20,9 @@ public interface InterventionRepository extends JpaRepository<Intervention, Long
     Optional<Intervention> findByDemandeIntervention(DemandeIntervention demandeIntervention);
 
     List<Intervention> findByStatut(StatutIntervention statut);
+    List<Intervention> findByPriorite(Priorite priorite);
 
-   // List<Intervention> findBySite(Site site);
 
-   // List<Intervention> findBySiteId(Long siteId);
 
     @Query("SELECT i FROM Intervention i WHERE i.dateDebut BETWEEN :debut AND :fin")
     List<Intervention> findByDateDebutBetween(@Param("debut") LocalDateTime debut,
@@ -33,7 +33,27 @@ public interface InterventionRepository extends JpaRepository<Intervention, Long
                                             @Param("fin") LocalDateTime fin);
 
     @Query("SELECT i FROM Intervention i WHERE i.statut = 'EN_COURS'")
-    List<Intervention> findActiveInterventions();
+    List<Intervention> findInterventionEnCours();
+    @Query("SELECT i FROM Intervention i WHERE i.statut = 'ACCEPTE'")
+    List<Intervention> findInterventionEnAccepte();
+    @Query("SELECT i FROM Intervention i WHERE i.statut = 'TERMINEE'")
+    List<Intervention> findInterventionTerminer();
+    @Query("SELECT i FROM Intervention i WHERE i.statut = 'ECHEC'")
+    List<Intervention> findInterventionEchouer();
+
+    @Query("SELECT i FROM Intervention i WHERE i.priorite = 'CRITIQUE'")
+    List<Intervention> findInterventionCritique();
+    @Query("SELECT i FROM Intervention i WHERE i.statut = 'NORMALE'")
+    List<Intervention> findInterventionNormale();
+
+    @Query("SELECT i FROM Intervention i WHERE i.statut = 'HAUTE'")
+    List<Intervention> findInterventionHaute();
+
+    @Query("SELECT i FROM Intervention i WHERE i.statut = 'BASSE'")
+    List<Intervention> findInterventionBasse();
+
+
+
 
     @Query("SELECT i FROM Intervention i WHERE i.statut = 'PLANIFIEE' AND i.dateDebut <= :date")
     List<Intervention> findScheduledInterventionsToStart(@Param("date") LocalDateTime date);
@@ -53,9 +73,13 @@ public interface InterventionRepository extends JpaRepository<Intervention, Long
 
     List<Intervention> findByIngenieurAndStatutInAndDateFinAfterAndDateDebutBefore(
             User ingenieur,
-            List<StatutIntervention> statuts,  // Assurez-vous que c'est bien List<StatutIntervention>
+            List<StatutIntervention> statuts,
             LocalDateTime dateDebut,
             LocalDateTime dateFin
     );
+
+
+
+
 
 }

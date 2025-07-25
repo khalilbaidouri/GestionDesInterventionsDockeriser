@@ -2,6 +2,7 @@ package spring.security.avis.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import spring.security.avis.Enum.Priorite;
 import spring.security.avis.Enum.StatutIntervention;
 import java.util.List;
 import java.time.LocalDateTime;
@@ -35,11 +36,14 @@ public class Intervention {
     @Enumerated(EnumType.STRING)
     private StatutIntervention statut;
 
+    @Enumerated(EnumType.STRING)
+    private Priorite priorite;
+
     @Column(columnDefinition = "TEXT")
     private String observation;
 
     @Column(name = "duree_reelle")
-    private Integer dureeReelle;
+    private Long dureeReelle;
 
 
     @OneToOne
