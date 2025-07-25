@@ -24,7 +24,6 @@ public class DemoApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		// Création du rôle admin
 		Role adminRole = Role.builder().libelle(TypeRole.ADMINISTRATEUR).build();
 		User admin = User.builder()
 				.active(true)
@@ -38,7 +37,6 @@ public class DemoApplication implements CommandLineRunner {
 			userRepo.save(admin);
 		}
 
-		// Création du rôle manager
 		Role managerRole = Role.builder().libelle(TypeRole.MANAGER).build();
 		User manager = User.builder()
 				.active(true)
@@ -52,7 +50,6 @@ public class DemoApplication implements CommandLineRunner {
 			userRepo.save(manager);
 		}
 
-		// Création du rôle ingénieur
 		Role ingenieurRole = Role.builder().libelle(TypeRole.INGENIEUR).build();
 		User ingenieur = User.builder()
 				.active(true)

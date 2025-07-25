@@ -28,12 +28,12 @@ public interface DemandeInterventionRepository extends JpaRepository<DemandeInte
 
     List<DemandeIntervention> findByLocalisation(String localisation);
 
-    @Query("SELECT d FROM DemandeIntervention d WHERE d.statut = 'EN_ATTENTE' ORDER BY d.priorite DESC, d.dateCreation ASC")
-    List<DemandeIntervention> findPendingDemandesOrderedByPriority();
+//    @Query("SELECT d FROM DemandeIntervention d WHERE d.statut = 'EN_ATTENTE' ORDER BY d.priorite DESC, d.dateCreation ASC")
+//    List<DemandeIntervention> findPendingDemandesOrderedByPriority();
 
-    @Query("SELECT d FROM DemandeIntervention d WHERE d.dateEcheance BETWEEN :debut AND :fin")
-    List<DemandeIntervention> findByDateEcheanceBetween(@Param("debut") LocalDateTime debut,
-                                                        @Param("fin") LocalDateTime fin);
+//    @Query("SELECT d FROM DemandeIntervention d WHERE d.dateEcheance BETWEEN :debut AND :fin")
+//    List<DemandeIntervention> findByDateEcheanceBetween(@Param("debut") LocalDateTime debut,
+//                                                        @Param("fin") LocalDateTime fin);
 
 
 

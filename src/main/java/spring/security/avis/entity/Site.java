@@ -20,10 +20,5 @@ public class Site {
     private String adresse;
     private String coordonnees;
 
-    // Relations
-   /* @OneToMany(mappedBy = "site", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Intervention> interventions;
 
-    @OneToMany(mappedBy = "site", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Notification> notifications;*/
 }

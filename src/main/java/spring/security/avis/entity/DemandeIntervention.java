@@ -30,18 +30,24 @@ public class DemandeIntervention {
     @Enumerated(EnumType.STRING)
     private StatutDemande statut;
 
+
     @Column(name = "type_intervention")
     private String typeIntervention;
+
+//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+//    @Column(name = "date_creation")
+//    private LocalDateTime dateCreation;
+//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+//    @Column(name = "date_echeance")
+//    private LocalDate dateEcheance;
+
+
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    @Column(name = "date_creation")
-    private LocalDateTime dateCreation;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    @Column(name = "date_echeance")
-    private LocalDate dateEcheance;
+    @Column(name = "date_annoncement")
+    private LocalDateTime dateAnnoncement;
 
     private String localisation;
 
-    // Relations
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "utilisateur_id")
     private User utilisateur;

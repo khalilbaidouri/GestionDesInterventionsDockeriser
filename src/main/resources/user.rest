@@ -15,8 +15,8 @@ POST http://localhost:8080/api/connexion
 Content-Type: application/json
 
 {
-  "email" : "manager@gmail.com",
-  "password" : "manager"
+  "email" : "admin@gmail.com",
+  "password" : "admin"
 }
 ###
 
@@ -93,3 +93,28 @@ GET http://localhost:8080/api/avis
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBnbWFpbC5jb20iLCJ1c2VybmFtZSI6ImFkbWluQGdtYWlsLmNvbSIsImV4cCI6MTc1MjI2MzAxNywicGFzc3dvcmQiOiIkMmEkMTAkMDF6STdyUTRQV3pQOHJzLzA1cmVQTzV0LzlSRVpHM0ltVG1oOXBpcGdBZ2tUMVBLd1hvMnEifQ.Ufo1m5ICuNL6oVSMAkXkmJx31ypReoSx06V1-LPauEY
 ###
+//DEMANDE INTERVENTION
+POST http://localhost:8080/api/demande
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBnbWFpbC5jb20iLCJ1c2VybmFtZSI6ImFkbWluQGdtYWlsLmNvbSIsImV4cCI6MTc1MzM5ODQwOSwicGFzc3dvcmQiOiIkMmEkMTAkQXY2d3dRUXNqL3VycFkuSTcvLkMydS80V1VMYU9NM1lXSy84eHRKNXhob0lJNjJMUS43Y1MifQ.V_ce2lH44iRF_YuTIj99QH42VmBOSDZZR8OEftfmvbA
+
+{
+  "nom": "hihi",
+  "priorite": "BASSE",
+  "description": "wicjhbw",
+  "localisation": "w7d lblasa"
+}
+
+###
+//MODIFIER DEMANDE   //21042007
+POST http://localhost:8080/api/29/modifier
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBnbWFpbC5jb20iLCJ1c2VybmFtZSI6ImFkbWluQGdtYWlsLmNvbSIsImV4cCI6MTc1MzQwMzMxMiwicGFzc3dvcmQiOiIkMmEkMTAkQXY2d3dRUXNqL3VycFkuSTcvLkMydS80V1VMYU9NM1lXSy84eHRKNXhob0lJNjJMUS43Y1MifQ.YJe7pij5licCgfTTTg75CCQ4S_DGiceqwLrozgu5rq0
+
+{
+  "nom": "hhhh",
+  "priorite": "BASSE",
+  "description": "hhhh",
+  "localisation": "hhhh",
+  "typeIntervention": "hhhhh"
+}

@@ -137,7 +137,7 @@ public Intervention assignerIntervention(Long idIntervention, Long idIngenieur) 
                 throw new AccessDeniedException("Vous n'etes pas autorise à commencer cette intervention");
             }
 
-            intervention.setDateDebut(LocalDateTime.now());
+            intervention.setDateDebutReelle(LocalDateTime.now());
             intervention.setStatut(StatutIntervention.EN_COURS);
             return interventionRepository.save(intervention);
         }
@@ -156,7 +156,7 @@ public Intervention assignerIntervention(Long idIntervention, Long idIngenieur) 
             }
 
 
-            intervention.setDateFin(LocalDateTime.now());
+            intervention.setDateFinalReelle(LocalDateTime.now());
             intervention.setStatut(StatutIntervention.TERMINEE);
             return interventionRepository.save(intervention);
         }

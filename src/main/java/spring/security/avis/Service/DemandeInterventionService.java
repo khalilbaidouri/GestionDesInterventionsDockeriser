@@ -1,10 +1,8 @@
 package spring.security.avis.Service;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.View;
@@ -47,7 +45,8 @@ public void demandeIntervention(DemandeIntervention demandeIntervention) {
             );
 
     if (!demandeInterventionExiste.isPresent()) {
-        demandeIntervention.setDateCreation(LocalDateTime.now());
+        //demandeIntervention.setDateCreation(LocalDateTime.now());
+        demandeIntervention.setDateAnnoncement(LocalDateTime.now());
         demandeIntervention.setUtilisateur(utilisateur);
         this.demandeInterventionRepository.save(demandeIntervention);
     } else {
@@ -93,7 +92,52 @@ public void demandeIntervention(DemandeIntervention demandeIntervention) {
         return intervention;
     }
 
+/*
+    public void modifierDemande(Long id , DemandeIntervention demandeIntervention) {
+        Optional<DemandeIntervention> demandeRecuperer = demandeInterventionRepository.findById(id);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        User utilisateur = userRepo.findByEmail(username);
 
+        if (demandeRecuperer.isPresent() && demandeRecuperer.get().getUtilisateur().getId().equals(utilisateur.getId())) {
+            DemandeIntervention demande = demandeRecuperer.get();
+            demande.setLocalisation(demandeIntervention.getLocalisation());
+            demande.setDescription(demandeIntervention.getDescription());
+            demande.setNom(demandeIntervention.getNom());
+            demande.setTypeIntervention(demandeIntervention.getTypeIntervention());
+            this.demandeInterventionRepository.save(demande);
+        }
+        else {
+            throw new RuntimeException("demande introuvable !");
+        }
+    }*/
+
+
+    public void modifierDemande(Long id, DemandeIntervention demandeIntervention) {
+        Optional<DemandeIntervention> demandeRecuperer = demandeInterventionRepository.findById(id);
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        User utilisateur = userRepo.findByEmail(username); // ignore case sensitivity
+
+        if (demandeRecuperer.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Demande introuvable avec id: " + id);
+        }
+
+        DemandeIntervention demande = demandeRecuperer.get();
+
+        if (!demande.getUtilisateur().getId().equals(utilisateur.getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Vous n'êtes pas autorisé à modifier cette demande.");
+        }
+
+        // Mise à jour des champs
+        demande.setLocalisation(demandeIntervention.getLocalisation());
+        demande.setDescription(demandeIntervention.getDescription());
+        demande.setNom(demandeIntervention.getNom());
+        demande.setTypeIntervention(demandeIntervention.getTypeIntervention());
+
+        demandeInterventionRepository.save(demande);
+    }
 
 
 }

@@ -20,11 +20,20 @@ public class DemandeController {
     public DemandeController(DemandeInterventionService demandeInterventionService) {
         this.demandeInterventionService = demandeInterventionService;
     }
+
     @PostMapping(path = "/demande")
     public ResponseEntity<Void> creerDemande(@RequestBody DemandeIntervention demandeIntervention) {
         demandeInterventionService.demandeIntervention(demandeIntervention);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
+
+    @PostMapping(path = "/{idIntervention}/modifier")
+    public ResponseEntity<Void> modifierDemande(@PathVariable("idIntervention") Long idDemande,
+                                                @RequestBody DemandeIntervention demandeIntervention) {
+        demandeInterventionService.modifierDemande(idDemande, demandeIntervention);
+        return ResponseEntity.ok().build(); // HTTP 200 OK sans corps
+    }
+
 
     @PostMapping("/{idDemande}/accepter")
     public ResponseEntity<Intervention> accepterDemande(

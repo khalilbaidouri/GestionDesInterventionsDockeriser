@@ -22,6 +22,12 @@ public class Intervention {
     @Column(name = "date_fin")
     private LocalDateTime dateFin;
 
+    @Column(name = "date_fin_reelle")
+    private LocalDateTime dateFinalReelle;
+
+    @Column(name = "date_debut_reelle")
+    private LocalDateTime DateDebutReelle;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "technicien_id")
     private User ingenieur;
