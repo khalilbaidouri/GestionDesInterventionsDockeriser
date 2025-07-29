@@ -85,7 +85,7 @@ public class UserService implements UserDetailsService {
          this.userRepo.save(userActiver);
     }
 
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User utilisateur = userRepo.findByEmail(email);
         if (utilisateur == null) {
             throw new UsernameNotFoundException("Aucun utilisateur trouvé avec l'email : " + email);

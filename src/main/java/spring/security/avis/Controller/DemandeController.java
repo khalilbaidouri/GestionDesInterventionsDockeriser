@@ -5,12 +5,15 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import spring.security.avis.DTO.AccepterDemandeRequest;
+import spring.security.avis.DTO.DemandeInterventionDTO;
+import spring.security.avis.DTO.InterventionDTO;
 import spring.security.avis.Enum.Priorite;
 import spring.security.avis.Service.DemandeInterventionService;
 import spring.security.avis.entity.DemandeIntervention;
 import spring.security.avis.entity.Intervention;
 
 import java.nio.file.AccessDeniedException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -40,19 +43,53 @@ public class DemandeController {
 
 
     @PostMapping("/{idDemande}/accepter")
-    public ResponseEntity<Intervention> accepterDemande(
+    public ResponseEntity<InterventionDTO> accepterDemande(
             @PathVariable Long idDemande,
             @RequestBody AccepterDemandeRequest request) {
         Intervention intervention = demandeInterventionService.accepterDemande(idDemande, request.dateDebut(), request.dateEcheance());
-        return ResponseEntity.ok(intervention);
+
+            InterventionDTO interventionDTO = new InterventionDTO(
+                    intervention.getId(),
+                    intervention.getDescription(),
+                    intervention.getDateDebut(),
+                    intervention.getDateFin(),
+                    intervention.getDateFinalReelle(),
+                    intervention.getDateDebutReelle(),
+                    //intervention.getIngenieur(),
+                    intervention.getStatut(),
+                    intervention.getPriorite(),
+                    intervention.getObservation(),
+                    intervention.getDureeReelle(),
+                    //intervention.getDemandeIntervention(),
+                    intervention.getLocalisation()
+            );
+        return ResponseEntity.ok(interventionDTO);
     }
 
     @GetMapping("/afficherLesInterventionsParEtat")
-    public ResponseEntity<List<DemandeIntervention>> afficherLesInterventionsParPriorite(
+    public ResponseEntity<List<DemandeInterventionDTO>> afficherLesInterventionsParPriorite(
             @RequestParam Priorite priorite) throws AccessDeniedException {
 
         List<DemandeIntervention> demandeInterventions = demandeInterventionService.getDemandeInterventionByPriorite(priorite);
-        return ResponseEntity.ok(demandeInterventions);
+
+        List<DemandeInterventionDTO> listDemande = new ArrayList<>();
+
+        for (DemandeIntervention demande : demandeInterventions) {
+            DemandeInterventionDTO dto = new DemandeInterventionDTO(
+                    demande.getId(),
+                    demande.getNom(),
+                    demande.getDescription(),
+                    demande.getPriorite(),
+                    demande.getStatut(),
+                    demande.getTypeIntervention(),
+                    demande.getDateAnnoncement(),
+                    demande.getLocalisation()
+            );
+            listDemande.add(dto);
+        }
+
+        return ResponseEntity.ok(listDemande);
     }
+
 
 }

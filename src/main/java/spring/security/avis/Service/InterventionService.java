@@ -219,12 +219,14 @@ public List<Intervention> getInterventionByStatut(StatutIntervention statut) thr
             throw new RuntimeException("Utilisateur non trouve");
         }
 
-        Set<Intervention> interventions = (Set<Intervention>) utilisateur.getInterventions();
+        List<Intervention> interventions = utilisateur.getInterventions();
+
         if (interventions == null) {
             return new ArrayList<>();
         }
 
-        return new ArrayList<>(interventions);
+        return interventions;
     }
+
 
 }

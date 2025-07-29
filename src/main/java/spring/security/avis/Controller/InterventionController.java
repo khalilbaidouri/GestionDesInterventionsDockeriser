@@ -2,12 +2,14 @@ package spring.security.avis.Controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import spring.security.avis.DTO.InterventionDTO;
 import spring.security.avis.Enum.Priorite;
 import spring.security.avis.Enum.StatutIntervention;
 import spring.security.avis.Service.InterventionService;
 import spring.security.avis.entity.Intervention;
 
 import java.nio.file.AccessDeniedException;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -55,12 +57,33 @@ public class InterventionController {
         List<Intervention> interventions = interventionService.getInterventionPriorite(priorite);
         return ResponseEntity.ok(interventions);
     }
+
     @GetMapping("/afficherLesInterventionsParStatut")
-    public ResponseEntity<List<Intervention>> afficherLesInterventionsParPriorite(
+    public ResponseEntity<List<InterventionDTO>> afficherLesInterventionsParPriorite(
             @RequestParam StatutIntervention statut) throws AccessDeniedException {
 
         List<Intervention> interventions = interventionService.getInterventionByStatut(statut);
-        return ResponseEntity.ok(interventions);
+        List<InterventionDTO> interventionDTOS = new ArrayList<>();
+
+        for (Intervention intervention : interventions) {
+            InterventionDTO dto = new InterventionDTO(
+                    intervention.getId(),
+                    intervention.getDescription(),
+                    intervention.getDateDebut(),
+                    intervention.getDateFin(),
+                    intervention.getDateFinalReelle(),
+                    intervention.getDateDebutReelle(),
+                    //intervention.getIngenieur(),
+                    intervention.getStatut(),
+                    intervention.getPriorite(),
+                    intervention.getObservation(),
+                    intervention.getDureeReelle(),
+                    //intervention.getDemandeIntervention(),
+                    intervention.getLocalisation()
+            );
+            interventionDTOS.add(dto);
+        }
+        return ResponseEntity.ok(interventionDTOS);
     }
     @PutMapping("/{id}")
     public ResponseEntity<Intervention> modifierIntervention(
@@ -72,9 +95,31 @@ public class InterventionController {
     }
 
     @GetMapping("/mesInterventions")
-    public ResponseEntity<List<Intervention>> getMesInterventions() {
+    public ResponseEntity<List<InterventionDTO>> getMesInterventions() {
         List<Intervention> interventions = interventionService.getMesInterventions();
-        return ResponseEntity.ok(interventions);
+
+        List<InterventionDTO> interventionDTOS = new ArrayList<>();
+
+        for (Intervention intervention : interventions) {
+            InterventionDTO dto = new InterventionDTO(
+                    intervention.getId(),
+                    intervention.getDescription(),
+                    intervention.getDateDebut(),
+                    intervention.getDateFin(),
+                    intervention.getDateFinalReelle(),
+                    intervention.getDateDebutReelle(),
+                    //intervention.getIngenieur(),
+                    intervention.getStatut(),
+                    intervention.getPriorite(),
+                    intervention.getObservation(),
+                    intervention.getDureeReelle(),
+                    //intervention.getDemandeIntervention(),
+                    intervention.getLocalisation()
+            );
+            interventionDTOS.add(dto);
+        }
+
+        return ResponseEntity.ok(interventionDTOS);
     }
 
 

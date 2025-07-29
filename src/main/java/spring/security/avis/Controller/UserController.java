@@ -11,6 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import spring.security.avis.DTO.AuthDto;
+import spring.security.avis.DTO.UserDTO;
 import spring.security.avis.Repo.InterventionRepository;
 import spring.security.avis.Repo.UserRepo;
 import spring.security.avis.Securite.JwtService;
@@ -19,7 +20,6 @@ import spring.security.avis.Service.UserService;
 import spring.security.avis.entity.User;
 
 import java.util.Map;
-import java.util.Optional;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
@@ -75,15 +75,31 @@ public class UserController {
         this.jwtService.deconexion();
     }
 
-    //@PreAuthorize("hasAuthority('ROLE_ADMINISTRATEUR')")
     @GetMapping("/mesInfo")
-    public ResponseEntity<User> getMesInfo() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal().equals("anonymousUser")) {
+    public ResponseEntity<UserDTO> getMesInfo() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getPrincipal())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-        User userConnecter = (User) authentication.getPrincipal();
-        return ResponseEntity.ok(userConnecter);
+
+        String email = auth.getName();
+        User user = userRepo.findByEmail(email);
+
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        UserDTO userDTO = new UserDTO(
+                user.getId(),
+                user.getNom(),
+                user.getPrenom(),
+                user.getEmail(),
+                user.getRole().getLibelle(),
+                user.getMatricule()
+        );
+
+        return ResponseEntity.ok(userDTO);
     }
 
     @PostMapping("/alterPassword")
