@@ -32,10 +32,13 @@ public class Evenement {
 
     private String lieu;
 
-    // Relations
     @OneToOne
     @JoinColumn(name = "intervention_id")
     private Intervention intervention;
+
+    @ManyToOne
+    @JoinColumn(name = "calendrier_id")
+    private Calendrier calendrier;
 
 
 }

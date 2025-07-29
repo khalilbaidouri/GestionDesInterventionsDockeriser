@@ -2,11 +2,9 @@ package spring.security.avis.Controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import spring.security.avis.DTO.AssignerInterventionRequest;
 import spring.security.avis.Enum.Priorite;
 import spring.security.avis.Enum.StatutIntervention;
 import spring.security.avis.Service.InterventionService;
-import spring.security.avis.entity.DemandeIntervention;
 import spring.security.avis.entity.Intervention;
 
 import java.nio.file.AccessDeniedException;
@@ -78,5 +76,7 @@ public class InterventionController {
         List<Intervention> interventions = interventionService.getMesInterventions();
         return ResponseEntity.ok(interventions);
     }
+
+
 
 }

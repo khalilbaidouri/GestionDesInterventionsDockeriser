@@ -53,8 +53,8 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "utilisateur", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<DemandeIntervention> demandesIntervention;
 
-    @OneToOne(mappedBy = "utilisateur", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Calendrier calendrier;
+//    @OneToOne(mappedBy = "utilisateur", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+//    private Calendrier calendrier;
 
     @OneToMany(mappedBy = "ingenieur", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Intervention> interventions;

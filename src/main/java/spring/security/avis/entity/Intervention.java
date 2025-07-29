@@ -52,6 +52,11 @@ public class Intervention {
 
     private String localisation;
 
+    @ManyToOne
+    @JoinColumn(name = "calendrier_id")
+    private Calendrier calendrier;
+
+
     @OneToOne(mappedBy = "intervention", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Rapport rapport;
 

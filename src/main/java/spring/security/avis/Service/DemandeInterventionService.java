@@ -10,26 +10,30 @@ import spring.security.avis.Enum.Priorite;
 import spring.security.avis.Enum.StatutDemande;
 import spring.security.avis.Enum.StatutIntervention;
 import spring.security.avis.Repo.DemandeInterventionRepository;
+import spring.security.avis.Repo.EvenementRepository;
 import spring.security.avis.Repo.UserRepo;
 import spring.security.avis.entity.*;
 
 import java.nio.file.AccessDeniedException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 /**
  * @author $ {USERS}
  **/
+
 @Service
 public class DemandeInterventionService {
     private final DemandeInterventionRepository demandeInterventionRepository;
     private final UserRepo userRepo;
-    public DemandeInterventionService(DemandeInterventionRepository demandeInterventionRepository, View error, UserRepo userRepo) {
+    private final EvenementRepository evenementRepository;
+    private final CalendrierService calendrierService;
+    public DemandeInterventionService(DemandeInterventionRepository demandeInterventionRepository, View error, UserRepo userRepo, EvenementRepository evenementRepository, CalendrierService calendrierService) {
         this.demandeInterventionRepository = demandeInterventionRepository;
         this.userRepo = userRepo;
+        this.evenementRepository = evenementRepository;
+        this.calendrierService = calendrierService;
     }
 
 public void demandeIntervention(DemandeIntervention demandeIntervention) {
@@ -75,12 +79,18 @@ public void demandeIntervention(DemandeIntervention demandeIntervention) {
         intervention.setStatut(StatutIntervention.ACCEPTE);
         intervention.setLocalisation(demande.getLocalisation());
 
+        Calendrier calendrier = calendrierService.getCalendrierUnique();
+        intervention.setCalendrier(calendrier);
+
         Evenement evenement = new Evenement();
         evenement.setTitre(demande.getNom());
         evenement.setIntervention(intervention);
         evenement.setLieu(intervention.getLocalisation());
-        evenement.setDescription("Intervention démarree");
+        evenement.setDescription("Intervention demarree");
         evenement.setDateDebut(LocalDateTime.now());
+
+        evenement.setCalendrier(calendrier);
+
         intervention.setEvenement(evenement);
 
         Rapport rapport = new Rapport();

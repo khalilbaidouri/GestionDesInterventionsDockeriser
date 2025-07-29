@@ -5,23 +5,24 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import spring.security.avis.DTO.AuthDto;
+import spring.security.avis.Repo.InterventionRepository;
+import spring.security.avis.Repo.UserRepo;
 import spring.security.avis.Securite.JwtService;
 import spring.security.avis.Service.InterventionService;
 import spring.security.avis.Service.UserService;
-import spring.security.avis.entity.Intervention;
 import spring.security.avis.entity.User;
 
-import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 public class UserController {
 
@@ -30,11 +31,16 @@ public class UserController {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final InterventionService interventionService;
-    public UserController(UserService userService, AuthenticationManager authenticationManager, JwtService jwtService, InterventionService interventionService) {
+    private final InterventionRepository interventionRepository;
+    private final UserRepo userRepo;
+
+    public UserController(UserService userService, AuthenticationManager authenticationManager, JwtService jwtService, InterventionService interventionService, InterventionRepository interventionRepository, UserRepo userRepo) {
         this.userService = userService;
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
         this.interventionService = interventionService;
+        this.interventionRepository = interventionRepository;
+        this.userRepo = userRepo;
     }
 
     @PostMapping(path = "/inscription")
@@ -88,6 +94,7 @@ public class UserController {
     public void newPassword(@RequestBody Map<String,String> parametre) {
         this.userService.newPassword(parametre);
     }
+
 
 
 }

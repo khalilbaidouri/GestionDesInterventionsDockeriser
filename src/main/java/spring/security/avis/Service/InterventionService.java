@@ -12,6 +12,9 @@ import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+
+import static spring.security.avis.Service.UserService.calculerDureeEnMinutes;
 
 /**
  * @author $ {USERS}
@@ -46,9 +49,9 @@ public class InterventionService {
 
         User ingenieur = (idIngenieur != null)
                 ? userRepository.findById(idIngenieur)
-                .orElseThrow(() -> new RuntimeException("Ingénieur non trouvé"))
+                .orElseThrow(() -> new RuntimeException("Ingénieur non trouve"))
                 : userService.ingenieurDispo(interventionAssigner.getDateDebut(), interventionAssigner.getDateFin())
-                .orElseThrow(() -> new RuntimeException("Aucun ingénieur disponible pour cette période"));
+                .orElseThrow(() -> new RuntimeException("Aucun ingénieur disponible pour cette periode"));
 
         System.out.println("Intervention à assigner : " + interventionAssigner.getDateDebut() + " -> " + interventionAssigner.getDateFin());
 
@@ -60,7 +63,7 @@ public class InterventionService {
                             interventionAssigner.getDateDebut().isAfter(i.getDateFin()));
 
             if (chevauchement) {
-                throw new RuntimeException("L'ingénieur sélectionné a déjà une intervention (ID " + i.getId() + ") qui chevauche cette période.");
+                throw new RuntimeException("L'ingenieur selectionne a deja une intervention (ID " + i.getId() + ") qui chevauche cette periode.");
             }
         }
 
@@ -84,7 +87,7 @@ public class InterventionService {
         else {
             notification.setType(TypeNotification.ALERTE);
         }
-        notification.setMessage("Tu as une nouvelle mission assignée : Intervention #" + intervention.getId() + " " + intervention.getDescription());
+        notification.setMessage("Tu as une nouvelle mission assignee : Intervention #" + intervention.getId() + " " + intervention.getDescription());
         notification.setDateEnvoi(LocalDateTime.now());
         notificationRepository.save(notification);
     }
@@ -127,8 +130,7 @@ public class InterventionService {
         intervention.setStatut(StatutIntervention.TERMINEE);
         intervention.getEvenement().setDateFin(LocalDateTime.now());
         intervention.getEvenement().setType(TypeEvenement.MAINTENANCE);
-        intervention.getEvenement().setLieu(intervention.getLocalisation());
-        long duree = userService.calculerDureeEnMinutes(intervention.getDateDebutReelle(),intervention.getDateFinalReelle());
+        long duree = calculerDureeEnMinutes(intervention.getDateDebutReelle(),intervention.getDateFinalReelle());
         intervention.setDureeReelle(duree);
         intervention.getRapport().setContenu(rapport);
         intervention.getRapport().setDateCreation(LocalDateTime.now());
@@ -158,13 +160,13 @@ public class InterventionService {
         }
 
         intervention.setStatut(StatutIntervention.ECHEC);
-        long duree = userService.calculerDureeEnMinutes(intervention.getDateDebutReelle(),intervention.getDateFinalReelle());
+        long duree = calculerDureeEnMinutes(intervention.getDateDebutReelle(),intervention.getDateFinalReelle());
         intervention.setDureeReelle(duree);
         intervention.getRapport().setContenu(rapport);
         intervention.getRapport().setDateCreation(LocalDateTime.now());
         intervention.getEvenement().setDateFin(LocalDateTime.now());
         intervention.getEvenement().setType(TypeEvenement.MAINTENANCE);
-        intervention.getEvenement().setLieu(intervention.getLocalisation());
+
         HistoriqueIntervention historiqueIntervention = new HistoriqueIntervention();
         historiqueIntervention.setDureeAction(intervention.getDureeReelle());
         historiqueIntervention.setIntervention(intervention);
@@ -173,6 +175,7 @@ public class InterventionService {
         historiqueIntervention.setUtilisateur(intervention.getIngenieur());
         historiqueIntervention.setLocalisation(intervention.getLocalisation());
         historiqueIntervention.setStatut(StatutIntervention.ECHEC);
+
         historiqueInterventionRepository.save(historiqueIntervention);
         return interventionRepository.save(intervention);
     }
@@ -213,11 +216,15 @@ public List<Intervention> getInterventionByStatut(StatutIntervention statut) thr
 
         User utilisateur = userRepository.findByEmail(username);
         if (utilisateur == null) {
-            throw new RuntimeException("Utilisateur non trouvé");
+            throw new RuntimeException("Utilisateur non trouve");
         }
 
-        return new ArrayList<>(utilisateur.getInterventions());
-    }
+        Set<Intervention> interventions = (Set<Intervention>) utilisateur.getInterventions();
+        if (interventions == null) {
+            return new ArrayList<>();
+        }
 
+        return new ArrayList<>(interventions);
+    }
 
 }

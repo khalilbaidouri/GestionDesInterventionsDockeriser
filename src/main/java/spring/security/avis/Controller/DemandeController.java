@@ -12,7 +12,6 @@ import spring.security.avis.entity.Intervention;
 
 import java.nio.file.AccessDeniedException;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author $ {USERS}

@@ -4,10 +4,22 @@ POST http://localhost:8080/api/inscription
 Content-Type: application/json
 
 {
-  "username" : "khalilbaidouri@gmail.com",
-  "numero" : "0654324622",
+  "nom" : "khalil",
+  "prenom" : "baidouri",
+  "email" : "khalilbaidouri97@gmail.com",
+  "matrecule" : "bb226814",
   "password" : "Qwerty@123"
 }
+###
+// Activation
+POST http://localhost:8080/api/activation
+Content-Type: application/json
+
+{
+  "code" : "367508 "
+}
+###
+
 ###
 // CONNEXION
 ###
@@ -76,15 +88,6 @@ Content-Type: application/json
 
 ###
 
-###
-// Activation
-POST http://localhost:8080/api/activation
-Content-Type: application/json
-
-{
-  "code" : "367508 "
-}
-###
 
 
 ###

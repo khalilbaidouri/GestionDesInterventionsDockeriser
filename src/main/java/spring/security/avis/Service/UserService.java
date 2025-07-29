@@ -9,15 +9,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import spring.security.avis.Enum.StatutIntervention;
+import spring.security.avis.Enum.StatutNotification;
+import spring.security.avis.Enum.TypeNotification;
 import spring.security.avis.Enum.TypeRole;
-import spring.security.avis.Repo.InterventionRepository;
-import spring.security.avis.Repo.TokenRepo;
-import spring.security.avis.Repo.UserRepo;
-import spring.security.avis.Repo.ValidationRepo;
-import spring.security.avis.entity.Intervention;
-import spring.security.avis.entity.Role;
-import spring.security.avis.entity.User;
-import spring.security.avis.entity.Validation;
+import spring.security.avis.Repo.*;
+import spring.security.avis.entity.*;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -36,16 +32,18 @@ public class UserService implements UserDetailsService {
     private final ValidationRepo validationRepo;
     private final TokenRepo tokenRepo;
     private final InterventionRepository interventionRepository;
+    private final NotificationRepository notificationRepository;
 
 
 
-    public UserService(UserRepo userRepo, BCryptPasswordEncoder bCryptPasswordEncoder, ValidationService validationService, ValidationRepo validationRepo, TokenRepo tokenRepo, InterventionRepository interventionRepository) {
+    public UserService(UserRepo userRepo, BCryptPasswordEncoder bCryptPasswordEncoder, ValidationService validationService, ValidationRepo validationRepo, TokenRepo tokenRepo, InterventionRepository interventionRepository, NotificationRepository notificationRepository) {
         this.userRepo = userRepo;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.validationService = validationService;
         this.validationRepo = validationRepo;
         this.tokenRepo = tokenRepo;
         this.interventionRepository = interventionRepository;
+        this.notificationRepository = notificationRepository;
     }
 
     public void inscription(User user) {
@@ -142,5 +140,19 @@ public class UserService implements UserDetailsService {
         }
     }
 
+    public List<Notification> getMesNotifications(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+
+        List<Notification> notifications = new ArrayList<>();
+        User user = userRepo.findByEmail(username);
+        if (user == null) {
+            throw new RuntimeException("User n'exist pas.");
+        }
+        for (Notification notification : user.getNotifications()) {
+            notifications.add(notification);
+        }
+        return notifications;
+    }
 
 }
