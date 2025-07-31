@@ -15,22 +15,10 @@ import java.util.Optional;
 @Repository
 public interface CalendrierRepository extends JpaRepository<Calendrier, Long> {
 
-//    Optional<Calendrier> findByUtilisateur(User utilisateur);
-//
-//    Optional<Calendrier> findByUtilisateurId(Long utilisateurId);
-//
-//    List<Calendrier> findByStatut(StatutCalendrier statut);
-//
-//    @Query("SELECT c FROM Calendrier c WHERE c.statut = 'ACTIF'")
-//    List<Calendrier> findActiveCalendriers();
-//
-//    @Query("SELECT c FROM Calendrier c WHERE c.utilisateur.role = :role AND c.statut = 'ACTIF'")
-//    List<Calendrier> findActiveCalendriersByRole(@Param("role") Role role);
-//
-//    boolean existsByUtilisateur(User utilisateur);
-//
-//    @Query("SELECT COUNT(c) FROM Calendrier c WHERE c.statut = :statut")
-//    long countByStatut(@Param("statut") StatutCalendrier statut);
-
         Optional<Calendrier> findFirstByOrderByIdAsc();
+//        @Query("SELECT DISTINCT c FROM Calendrier c " +
+//                "JOIN c.evenements e " +
+//                "WHERE e.utilisateur.id = :userId")
+//        List<Calendrier> findCalendriersByEvenementUtilisateurId(@Param("userId") Long userId);
+
 }

@@ -11,6 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import spring.security.avis.DTO.AuthDto;
+import spring.security.avis.DTO.ProfilUpdateRequest;
 import spring.security.avis.DTO.UserDTO;
 import spring.security.avis.Repo.InterventionRepository;
 import spring.security.avis.Repo.UserRepo;
@@ -111,6 +112,18 @@ public class UserController {
         this.userService.newPassword(parametre);
     }
 
-
-
+    @PutMapping("/modifierProfil")
+    public ResponseEntity<?> modifierProfil(@RequestBody ProfilUpdateRequest request) {
+        try {
+            userService.modifierProfil(
+                    request.nom(),
+                    request.prenom(),
+                    request.email(),
+                    request.password()
+            );
+            return ResponseEntity.ok("Profil modifie avec succes.");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }

@@ -88,7 +88,6 @@ public void demandeIntervention(DemandeIntervention demandeIntervention) {
         evenement.setLieu(intervention.getLocalisation());
         evenement.setDescription("Intervention demarree");
         evenement.setDateDebut(LocalDateTime.now());
-
         evenement.setCalendrier(calendrier);
 
         intervention.setEvenement(evenement);

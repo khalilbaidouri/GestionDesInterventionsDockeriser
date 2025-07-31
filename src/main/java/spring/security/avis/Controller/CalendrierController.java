@@ -1,14 +1,24 @@
 package spring.security.avis.Controller;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import spring.security.avis.DTO.CalendrierUpdateRequest;
+import spring.security.avis.Repo.UserRepo;
 import spring.security.avis.Service.CalendrierService;
 import spring.security.avis.entity.Calendrier;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import spring.security.avis.entity.Evenement;
 import spring.security.avis.entity.Intervention;
+import org.springframework.security.core.Authentication;
+import spring.security.avis.entity.User;
 
+
+import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -16,13 +26,13 @@ import java.util.List;
  **/
 @RestController
 @RequestMapping("/calendrier")
+@RequiredArgsConstructor
 public class CalendrierController {
 
     private final CalendrierService calendrierService;
+    private final UserRepo userRepo;
 
-    public CalendrierController(CalendrierService calendrierService) {
-        this.calendrierService = calendrierService;
-    }
+
 
     @GetMapping
     public ResponseEntity<Calendrier> getCalendrier() {
@@ -43,6 +53,56 @@ public class CalendrierController {
     public ResponseEntity<List<Intervention>> getInterventionsCalendrier() {
         Calendrier calendrier = calendrierService.getCalendrierUnique();
         return ResponseEntity.ok(calendrier.getInterventions());
+    }
+
+
+    @GetMapping("/evenements")
+    public ResponseEntity<List<Map<String, Object>>> getEvenements(Authentication authentication) {
+        Authentication connecter = SecurityContextHolder.getContext().getAuthentication();
+        String username = connecter.getName();
+        User user = userRepo.findByEmail(username);
+        List<Evenement> evenements = calendrierService.getEvenements(user);
+
+        List<Map<String, Object>> response = evenements.stream().map(e -> {
+            Map<String, Object> eventMap = new HashMap<>();
+            eventMap.put("id", e.getId());
+            eventMap.put("title", e.getTitre());
+            eventMap.put("start", e.getDateDebut());
+            //eventMap.put("end", e.getDateFin());
+            eventMap.put("description", e.getDescription());
+            eventMap.put("lieu", e.getLieu());
+            return eventMap;
+        }).toList();
+
+        return ResponseEntity.ok(response);
+    }
+
+
+
+
+    @GetMapping("/evenements/{date}")
+    public ResponseEntity<List<Map<String, Object>>> getEvenementsParDate(
+            @PathVariable String date,
+            Authentication authentication) {
+
+        User user = userRepo.findByEmail(authentication.getName());
+
+        LocalDate localDate = LocalDate.parse(date);
+
+        List<Evenement> evenements = calendrierService.getEvenementsParDate(user, localDate);
+
+        List<Map<String, Object>> response = evenements.stream().map(e -> {
+            Map<String, Object> eventMap = new HashMap<>();
+            eventMap.put("id", e.getId());
+            eventMap.put("title", e.getTitre());
+            eventMap.put("start", e.getDateDebut());
+            eventMap.put("end", e.getDateFin());
+            eventMap.put("description", e.getDescription());
+            eventMap.put("lieu", e.getLieu());
+            return eventMap;
+        }).toList();
+
+        return ResponseEntity.ok(response);
     }
 }
 

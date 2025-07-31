@@ -155,4 +155,32 @@ public class UserService implements UserDetailsService {
         return notifications;
     }
 
+    public void modifierProfil(String nom, String prenom, String email, String password) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        User user = userRepo.findByEmail(username);
+
+        if (user != null) {
+            if (nom != null && !nom.trim().isEmpty()) {
+                user.setNom(nom);
+            }
+
+            if (prenom != null && !prenom.trim().isEmpty()) {
+                user.setPrenom(prenom);
+            }
+
+            if (email != null && !email.trim().isEmpty()) {
+                user.setEmail(email);
+            }
+
+            if (password != null && !password.trim().isEmpty()) {
+                String newPassword = bCryptPasswordEncoder.encode(password);
+                user.setPassword(newPassword);
+            }
+
+            userRepo.save(user);
+        }
+    }
+
 }
+

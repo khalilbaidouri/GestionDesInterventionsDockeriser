@@ -8,6 +8,7 @@ import spring.security.avis.Enum.TypeEvenement;
 import spring.security.avis.entity.Evenement;
 import spring.security.avis.entity.Intervention;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -45,4 +46,23 @@ public interface EvenementRepository extends JpaRepository<Evenement, Long> {
     List<Evenement> searchByKeyword(@Param("keyword") String keyword);
 
     boolean existsByIntervention(Intervention intervention);
+
+    @Query("SELECT e FROM Evenement e " +
+            "JOIN e.intervention i " +
+            "WHERE i.ingenieur.id = :userId")
+    List<Evenement> findByUserId(@Param("userId") Long userId);
+
+
+
+    @Query("SELECT e FROM Evenement e " +
+            "WHERE DATE(e.dateDebut) <= :date " +
+            "AND DATE(e.dateFin) >= :date")
+    List<Evenement> findEvenementsByDate(@Param("date") LocalDate date);
+
+    @Query("SELECT e FROM Evenement e " +
+            "WHERE DATE(e.dateDebut) <= :date " +
+            "AND DATE(e.dateFin) >= :date " +
+            "AND e.intervention.ingenieur.id = :userId")
+    List<Evenement> findEvenementsByDateAndUser(@Param("date") LocalDate date,
+                                                @Param("userId") Long userId);
 }

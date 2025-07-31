@@ -3,7 +3,6 @@ package spring.security.avis.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 import spring.security.avis.Enum.StatutCalendrier;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -27,16 +26,11 @@ public class Calendrier {
     @Column(name = "date_creation")
     private LocalDateTime dateCreation;
 
-//    @OneToOne
-//    @JoinColumn(name = "utilisateur_id")
-//    private User utilisateur;
 
     @OneToMany(mappedBy = "calendrier")
     private List<Intervention> interventions;
 
     @OneToMany(mappedBy = "calendrier", cascade = CascadeType.ALL)
     private List<Evenement> evenements;
-
-
 
 }

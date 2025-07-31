@@ -17,6 +17,8 @@ import spring.security.avis.entity.User;
 import spring.security.avis.entity.Validation;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author $ {USERS}
@@ -72,6 +74,19 @@ public class NotificationService {
         notification.setDestinataire(ingenieur);
 
         notificationRepository.save(notification);
+    }
+
+
+    public List<Notification> getMesNotif(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        User user = userRepo.findByEmail(username);
+        List<Notification> listNotif=new ArrayList<>();
+        for (Notification notification : user.getNotifications()){
+           // notification.setDateLecture(LocalDateTime.now());
+            listNotif.add(notification);
+        }
+        return listNotif;
     }
 
 }
