@@ -27,6 +27,17 @@ public class InterventionDTO {
         private Long dureeReelle;
         private String localisation;
 
-
-
+        public InterventionDTO(Intervention intervention) {
+                this.id = intervention.getId();
+                Description = intervention.getDescription();
+                this.dateDebut = intervention.getDateDebut();
+                this.dateFin = intervention.getDateFin();
+                this.dateFinalReelle = intervention.getDateFinalReelle();
+                this.DateDebutReelle = intervention.getDateDebutReelle();
+                this.statut = intervention.getStatut();
+                this.priorite = intervention.getPriorite();
+                this.observation = intervention.getObservation();
+                this.dureeReelle = intervention.getDureeReelle();
+                this.localisation = intervention.getLocalisation();
+        }
 }

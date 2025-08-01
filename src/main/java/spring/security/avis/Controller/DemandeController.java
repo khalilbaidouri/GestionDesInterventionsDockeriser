@@ -66,6 +66,12 @@ public class DemandeController {
         return ResponseEntity.ok(interventionDTO);
     }
 
+    @PostMapping("/{idDemande}/refuser")
+    public ResponseEntity<String> refuserDemande(@PathVariable Long idDemande) {
+        demandeInterventionService.refuserDemande(idDemande);
+        return ResponseEntity.ok(" Demande refuse");
+    }
+
     @GetMapping("/afficherLesInterventionsParEtat")
     public ResponseEntity<List<DemandeInterventionDTO>> afficherLesInterventionsParPriorite(
             @RequestParam Priorite priorite) throws AccessDeniedException {

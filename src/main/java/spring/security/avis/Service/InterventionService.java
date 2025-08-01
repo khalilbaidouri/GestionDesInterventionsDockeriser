@@ -12,7 +12,6 @@ import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import static spring.security.avis.Service.UserService.calculerDureeEnMinutes;
 
@@ -28,14 +27,16 @@ public class InterventionService {
     private final NotificationRepository notificationRepository;
     private final DemandeInterventionRepository demandeInterventionRepository;
     private final UserService userService;
+    private final NotificationService notificationService;
 
-    public InterventionService(InterventionRepository interventionRepository, HistoriqueInterventionRepository historiqueInterventionRepository, UserRepo userRepository, NotificationRepository notificationRepository, DemandeInterventionRepository demandeInterventionRepository, UserService userService) {
+    public InterventionService(InterventionRepository interventionRepository, HistoriqueInterventionRepository historiqueInterventionRepository, UserRepo userRepository, NotificationRepository notificationRepository, DemandeInterventionRepository demandeInterventionRepository, UserService userService, NotificationService notificationService) {
         this.interventionRepository = interventionRepository;
         this.historiqueInterventionRepository = historiqueInterventionRepository;
         this.userRepository = userRepository;
         this.notificationRepository = notificationRepository;
         this.demandeInterventionRepository = demandeInterventionRepository;
         this.userService = userService;
+        this.notificationService = notificationService;
     }
 
 
@@ -67,7 +68,7 @@ public class InterventionService {
             }
         }
 
-        interventionAssigner.setStatut(StatutIntervention.EN_COURS);
+        interventionAssigner.setStatut(StatutIntervention.PLANIFIEE);
         interventionAssigner.setIngenieur(ingenieur);
 
         envoyerNotificationNouvelleIntervention(interventionAssigner, ingenieur);
@@ -195,10 +196,10 @@ public List<Intervention> getInterventionByStatut(StatutIntervention statut) thr
 
     public Intervention modifierIntervention(Long idIntervention, Intervention nouvelleIntervention) {
         Intervention interventionExistante = interventionRepository.findById(idIntervention)
-                .orElseThrow(() -> new RuntimeException("Intervention non trouvée"));
+                .orElseThrow(() -> new RuntimeException("Intervention non trouvee"));
 
         if (interventionExistante.getStatut() != StatutIntervention.ACCEPTE) {
-            throw new IllegalStateException("Seules les interventions avec le statut ACCEPTEE peuvent être modifiées.");
+            throw new IllegalStateException("Seules les interventions avec le statut ACCEPTEE peuvent être modifiees.");
         }
 
         interventionExistante.setDateDebut(nouvelleIntervention.getDateDebut());
@@ -227,6 +228,59 @@ public List<Intervention> getInterventionByStatut(StatutIntervention statut) thr
 
         return interventions;
     }
+
+    public void validerTache(Long idIntervention){
+        Intervention intervention = interventionRepository.findById(idIntervention)
+                .orElseThrow(() -> new RuntimeException("Intervention non trouvee"));
+
+        if (intervention.getStatut() != StatutIntervention.TERMINEE) {
+            throw new RuntimeException("La tache n'a pas encore ete terminee par le technicien.");
+        }
+
+        intervention.setStatut(StatutIntervention.VALIDE);
+        interventionRepository.save(intervention);
+    }
+
+    public void tacheARefaire(Long idIntervention, String message, LocalDateTime nouvelleDateDebut, LocalDateTime nouvelleDateFin) {
+        Intervention intervention = interventionRepository.findById(idIntervention)
+                .orElseThrow(() -> new RuntimeException("Intervention non trouvee"));
+
+        if (intervention.getStatut() != StatutIntervention.TERMINEE) {
+            throw new RuntimeException("La tache n'a pas encore ete terminee par le technicien.");
+        }
+
+        if (nouvelleDateDebut == null || nouvelleDateFin == null || !nouvelleDateDebut.isBefore(nouvelleDateFin)) {
+            throw new IllegalArgumentException("Dates invalides : la date de début doit être avant la date de fin.");
+        }
+
+        User technicien = intervention.getIngenieur();
+
+        for (Intervention i : technicien.getInterventions()) {
+            if (!i.getId().equals(idIntervention)) {
+                boolean chevauchement = !(nouvelleDateFin.isBefore(i.getDateDebut()) || nouvelleDateDebut.isAfter(i.getDateFin()));
+                if (chevauchement) {
+                    throw new RuntimeException("Le technicien est occupe pendant cette nouvelle période (conflit avec l'intervention ID " + i.getId() + ").");
+                }
+            }
+        }
+
+        intervention.setDateDebut(nouvelleDateDebut);
+        intervention.setDateFin(nouvelleDateFin);
+        intervention.setDateFinalReelle(null);
+        intervention.setDateDebutReelle(null);
+        intervention.setStatut(StatutIntervention.REFAIRE);
+
+        interventionRepository.save(intervention);
+
+        Notification notification = new Notification();
+        notification.setDateEnvoi(LocalDateTime.now());
+        notification.setType(TypeNotification.RAPPEL);
+        notification.setStatut(StatutNotification.NON_LUE);
+        notification.setMessage(message);
+        notification.setDestinataire(technicien);
+        notificationRepository.save(notification);
+    }
+
 
 
 }

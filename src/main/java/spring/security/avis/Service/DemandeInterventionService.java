@@ -65,7 +65,7 @@ public void demandeIntervention(DemandeIntervention demandeIntervention) {
                 .orElseThrow(() -> new RuntimeException("Demande non trouvée"));
 
         if (demande.getStatut() != StatutDemande.EN_ATTENTE) {
-            throw new RuntimeException("Demande déjà traitee");
+            throw new RuntimeException("Demande deja traitee");
         }
 
         demande.setStatut(StatutDemande.APPROUVEE);
@@ -119,7 +119,7 @@ public void demandeIntervention(DemandeIntervention demandeIntervention) {
         DemandeIntervention demande = demandeRecuperer.get();
 
         if (!demande.getUtilisateur().getId().equals(utilisateur.getId())) {
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Vous n'etes pas autorise à modifier cette demande.");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Vous n'etes pas autorise a modifier cette demande.");
         }
 
         demande.setLocalisation(demandeIntervention.getLocalisation());
@@ -134,5 +134,17 @@ public void demandeIntervention(DemandeIntervention demandeIntervention) {
         List<DemandeIntervention> demandeInterventions = demandeInterventionRepository.findByPriorite(etat);
         return demandeInterventions;
     }
+
+    public void refuserDemande(Long idDemande) {
+        DemandeIntervention demande = demandeInterventionRepository.findById(idDemande)
+                .orElseThrow(() -> new RuntimeException("Demande non trouvee"));
+        if (demande.getStatut() == StatutDemande.EN_ATTENTE) {
+            demande.setStatut(StatutDemande.REJETEE);
+            demandeInterventionRepository.save(demande);
+        } else {
+            throw new RuntimeException("Impossible de refuser : la demande  deja traitee");
+        }
+    }
+
 
 }

@@ -10,5 +10,7 @@ public enum StatutIntervention {
     TERMINEE,
     ANNULEE,
     ECHEC,
-    ACCEPTE
+    ACCEPTE,
+    VALIDE,
+    REFAIRE
 }

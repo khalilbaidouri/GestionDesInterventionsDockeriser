@@ -40,7 +40,7 @@ public class Intervention {
     private Priorite priorite;
 
     @Column(columnDefinition = "TEXT")
-    private String observation;
+    private String observation; // hadi ghandirha boolean meli chi ingenieur ikamal chi intervention matvalida tay iobservi chef de projet (observation ola validation)
 
     @Column(name = "duree_reelle")
     private Long dureeReelle;

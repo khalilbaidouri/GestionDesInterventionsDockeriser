@@ -60,7 +60,7 @@ POST http://localhost:8080/api/refreshToken
 Content-Type: application/json
 
 {
-  "token" : "f4b7d983-aea6-4b32-a3c3-cf86c35aebca"
+  "token" : "ab2e54a0-f93c-4345-993f-1c7d47751a5b"
 }
 ###
 ###
@@ -162,4 +162,17 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImluZ2VuaWV1ckBnbWFpb
 
 {
 
+}
+
+
+###
+//INTERVENTION A REFAIRE
+PUT http://localhost:8080/api/interventions/interventions/8/refaire
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbkBnbWFpbC5jb20iLCJ1c2VybmFtZSI6ImFkbWluQGdtYWlsLmNvbSIsImV4cCI6MTc1Mzk5ODMzMSwicGFzc3dvcmQiOiIkMmEkMTAkVk9qOXp2NmF4ZDJLS0cxb3hIWWVJLnR4Sm00V0hoOXpDOHBmNU0zdDViWWJvWjlBMjJHZS4ifQ.-fgTHyoZHADikFj_xcrXwqr4TeeXKupCB7XFVNST5Zw
+
+{
+  "message": "Le message de rappel",
+  "dateDebut": "2025-08-05T09:00:00",
+  "dateFin": "2025-08-05T12:00:00"
 }

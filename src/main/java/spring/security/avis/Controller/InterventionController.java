@@ -1,5 +1,6 @@
 package spring.security.avis.Controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import spring.security.avis.DTO.InterventionDTO;
@@ -9,8 +10,11 @@ import spring.security.avis.Service.InterventionService;
 import spring.security.avis.entity.Intervention;
 
 import java.nio.file.AccessDeniedException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/interventions")
@@ -24,12 +28,13 @@ public class InterventionController {
 
 
     @PostMapping("/{idIntervention}/assigner")
-    public ResponseEntity<Intervention> assignerIntervention(
+    public ResponseEntity<InterventionDTO> assignerIntervention(
             @PathVariable Long idIntervention,
             @RequestParam(required = false) Long idIngenieur) {
         try {
             Intervention intervention = interventionService.assignerIntervention(idIntervention, idIngenieur);
-            return ResponseEntity.ok(intervention);
+            InterventionDTO  interventionDTO= new InterventionDTO(intervention);
+            return ResponseEntity.ok(interventionDTO);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().build();
         }
@@ -121,6 +126,56 @@ public class InterventionController {
 
         return ResponseEntity.ok(interventionDTOS);
     }
+
+    @PutMapping("/interventions/{id}/refaire")
+    public ResponseEntity<String> tacheARefaire(
+            @PathVariable Long id,
+            @RequestBody Map<String, String> body) {
+
+        String message = body.get("message");
+        String dateDebutStr = body.get("dateDebut");
+        String dateFinStr = body.get("dateFin");
+
+        if (message == null || message.isBlank()) {
+            return ResponseEntity.badRequest().body("Le message est obligatoire.");
+        }
+        if (dateDebutStr == null || dateFinStr == null) {
+            return ResponseEntity.badRequest().body("Les dates de début et fin sont obligatoires.");
+        }
+
+        LocalDateTime dateDebut;
+        LocalDateTime dateFin;
+        try {
+            dateDebut = LocalDateTime.parse(dateDebutStr);
+            dateFin = LocalDateTime.parse(dateFinStr);
+        } catch (DateTimeParseException e) {
+            return ResponseEntity.badRequest().body("Format de date invalide. Utilisez le format ISO-8601 (ex: 2025-08-05T09:00:00).");
+        }
+
+        if (!dateDebut.isBefore(dateFin)) {
+            return ResponseEntity.badRequest().body("La date de début doit être avant la date de fin.");
+        }
+
+        try {
+            interventionService.tacheARefaire(id, message, dateDebut, dateFin);
+            return ResponseEntity.ok("Intervention mise à refaire et planifiée avec succès.");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erreur interne.");
+        }
+    }
+
+    @PutMapping("/interventions/{id}/valider")
+    public ResponseEntity<?> validerTache(@PathVariable Long id) {
+        try {
+            interventionService.validerTache(id);
+            return ResponseEntity.ok("Intervention validee avec succès.");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
 
 
 
