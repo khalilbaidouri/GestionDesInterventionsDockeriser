@@ -40,7 +40,6 @@ public class CalendrierService {
         if (calendrier.isPresent()) {
             return calendrier.get();
         } else {
-            // Créer le calendrier unique s'il n'existe pas
             Calendrier nouveauCalendrier = new Calendrier();
             nouveauCalendrier.setNom("Calendrier Principal");
             nouveauCalendrier.setDescription("Calendrier unique de l'application");

@@ -8,6 +8,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import spring.security.avis.DTO.UserRequestDTO;
+import spring.security.avis.DTO.UserResponseDTO;
 import spring.security.avis.Enum.StatutIntervention;
 import spring.security.avis.Enum.StatutNotification;
 import spring.security.avis.Enum.TypeNotification;
@@ -46,28 +48,46 @@ public class UserService implements UserDetailsService {
         this.notificationRepository = notificationRepository;
     }
 
-    public void inscription(User user) {
+    public UserResponseDTO inscription(UserRequestDTO userRequestDTO) {
 
-        if (user.getUsername() == null || !user.getUsername().contains("@") || !user.getUsername().contains(".")) {
+        if (userRequestDTO.getEmail() == null
+                || !userRequestDTO.getEmail().contains("@")
+                || !userRequestDTO.getEmail().contains(".")) {
             throw new RuntimeException("Email invalide");
         }
 
-        Optional<User> userOpt = userRepo.findEmail(user.getUsername());
+        Optional<User> userOpt = userRepo.findEmail(userRequestDTO.getEmail());
         if (userOpt.isPresent()) {
-            throw new RuntimeException("Email deja existant");
+            throw new RuntimeException("Email déjà existant");
         }
 
-        String newPassword = bCryptPasswordEncoder.encode(user.getPassword());
-        user.setPassword(newPassword);
+        User user = new User();
+        user.setUsername(userRequestDTO.getEmail());
+        user.setNom(userRequestDTO.getNom());
+        user.setPrenom(userRequestDTO.getPrenom());
+        user.setMatricule(userRequestDTO.getMatricule());
+
+        String encodedPassword = bCryptPasswordEncoder.encode(userRequestDTO.getPassword());
+        user.setPassword(encodedPassword);
 
         Role role = new Role();
         role.setLibelle(TypeRole.UTILISATEUR);
         user.setRole(role);
 
-        user = this.userRepo.save(user);
+        User savedUser = userRepo.save(user);
 
-        this.validationService.enregitrer(user);
+        validationService.enregitrer(savedUser);
+
+        return new UserResponseDTO(
+                savedUser.getId(),
+                savedUser.getNom(),
+                savedUser.getPrenom(),
+                savedUser.getUsername(),
+                savedUser.getMatricule(),
+                savedUser.getRole().getLibelle()
+        );
     }
+
 
     public void activation(Map<String,String> activation){
         Validation validation= this.validationService.getValidationByCode(activation.get("code"));

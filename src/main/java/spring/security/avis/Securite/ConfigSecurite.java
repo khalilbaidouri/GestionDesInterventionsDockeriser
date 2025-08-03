@@ -42,7 +42,7 @@ public class ConfigSecurite {
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                                //.requestMatchers(HttpMethod.POST,"/inscription").permitAll()
+                                .requestMatchers(HttpMethod.POST,"/inscription").permitAll()
                                 .requestMatchers(HttpMethod.POST,"/activation").permitAll()
                                 .requestMatchers(HttpMethod.POST,"/connexion").permitAll()
                                 .requestMatchers("/interventions/*/rapport").permitAll()
@@ -51,6 +51,7 @@ public class ConfigSecurite {
                                 .requestMatchers(HttpMethod.POST,"/refreshToken").permitAll()
                                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/avis").hasAuthority("ROLEADMINISTRATEUR")
+                                .requestMatchers("/mesInfo").authenticated()
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

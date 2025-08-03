@@ -41,15 +41,7 @@ public class NotificationController {
         List<Notification> notifications = notificationService.getMesNotif();
         List<NotificationDTO> dtos = new ArrayList<>();
         for (Notification notification : notifications) {
-            NotificationDTO notificationDTO = new NotificationDTO(
-                    notification.getId(),
-                    notification.getMessage(),
-                    notification.getDateEnvoi(),
-                    notification.getDateLecture(),
-                    notification.getType(),
-                    notification.getStatut()
-            );
-            dtos.add(notificationDTO);
+            dtos.add(new NotificationDTO(notification));
         }
         return ResponseEntity.ok(dtos);
     }

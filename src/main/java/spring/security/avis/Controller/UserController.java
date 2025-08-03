@@ -12,7 +12,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import spring.security.avis.DTO.AuthDto;
 import spring.security.avis.DTO.ProfilUpdateRequest;
-import spring.security.avis.DTO.UserDTO;
+import spring.security.avis.DTO.UserRequestDTO;
+import spring.security.avis.DTO.UserResponseDTO;
 import spring.security.avis.Repo.InterventionRepository;
 import spring.security.avis.Repo.UserRepo;
 import spring.security.avis.Securite.JwtService;
@@ -45,9 +46,11 @@ public class UserController {
     }
 
     @PostMapping(path = "/inscription")
-    public void inscription(@RequestBody User user) {
-        this.userService.inscription(user);
+    public ResponseEntity<UserResponseDTO> inscription(@RequestBody UserRequestDTO userRequestDTO) {
+        UserResponseDTO response = userService.inscription(userRequestDTO);
+        return ResponseEntity.ok(response);
     }
+
 
     @PostMapping(path = "/connexion")
     public Map<String,String> connexion(@RequestBody AuthDto authDto) {
@@ -77,7 +80,7 @@ public class UserController {
     }
 
     @GetMapping("/mesInfo")
-    public ResponseEntity<UserDTO> getMesInfo() {
+    public ResponseEntity<UserRequestDTO> getMesInfo() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
         if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getPrincipal())) {
@@ -91,16 +94,17 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
-        UserDTO userDTO = new UserDTO(
+        UserRequestDTO userRequestDTO = new UserRequestDTO(
                 user.getId(),
                 user.getNom(),
                 user.getPrenom(),
                 user.getEmail(),
                 user.getRole().getLibelle(),
-                user.getMatricule()
+                user.getMatricule(),
+                user.getPassword()
         );
 
-        return ResponseEntity.ok(userDTO);
+        return ResponseEntity.ok(userRequestDTO);
     }
 
     @PostMapping("/alterPassword")

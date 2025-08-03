@@ -1,9 +1,11 @@
 package spring.security.avis.Controller;
 
 import org.springframework.web.bind.annotation.*;
+import spring.security.avis.DTO.EvenementDTO;
 import spring.security.avis.Repo.EvenementRepository;
 import spring.security.avis.entity.Evenement;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,8 +22,13 @@ public class EvenementController {
     }
 
     @GetMapping("/evenements")
-    public List<Evenement> getEvenements() {
-        return evenementRepository.findAll();
+    public List<EvenementDTO> getEvenements() {
+        List<Evenement> events = evenementRepository.findAll();
+        List<EvenementDTO> dtos = new ArrayList<>();
+        for (Evenement event : events) {
+            dtos.add(new EvenementDTO(event));
+        }
+        return dtos;
     }
 
 }

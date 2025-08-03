@@ -6,7 +6,7 @@ import spring.security.avis.Enum.TypeRole;
 
 @Data
 @AllArgsConstructor
-public class UserDTO {
+public class UserRequestDTO {
     private Long id;
     private String nom;
     private String prenom;
@@ -15,4 +15,5 @@ public class UserDTO {
     //private boolean disponibilite;
     //private String specialite;
     private String matricule;
+    private String password;
 }

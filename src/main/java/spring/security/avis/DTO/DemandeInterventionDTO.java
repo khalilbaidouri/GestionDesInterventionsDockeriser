@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import spring.security.avis.Enum.Priorite;
 import spring.security.avis.Enum.StatutDemande;
+import spring.security.avis.entity.DemandeIntervention;
 import spring.security.avis.entity.Intervention;
 import spring.security.avis.entity.User;
 
@@ -25,6 +26,17 @@ public class DemandeInterventionDTO {
     private String typeIntervention;
     private LocalDateTime dateAnnoncement;
     private String localisation;
+
+    public DemandeInterventionDTO(DemandeIntervention demande) {
+        this.id =   demande.getId();
+        this.nom =     demande.getNom();
+        this.description =  demande.getDescription();
+        this.priorite =   demande.getPriorite();
+        this.statut =   demande.getStatut();
+        this.typeIntervention =   demande.getTypeIntervention();
+        this.dateAnnoncement =   demande.getDateAnnoncement();
+        this.localisation =   demande.getLocalisation();
+    }
 
 
 }

@@ -8,6 +8,7 @@ import spring.security.avis.DTO.AccepterDemandeRequest;
 import spring.security.avis.DTO.DemandeInterventionDTO;
 import spring.security.avis.DTO.InterventionDTO;
 import spring.security.avis.Enum.Priorite;
+import spring.security.avis.Repo.DemandeInterventionRepository;
 import spring.security.avis.Service.DemandeInterventionService;
 import spring.security.avis.entity.DemandeIntervention;
 import spring.security.avis.entity.Intervention;
@@ -23,9 +24,11 @@ import java.util.List;
 @RequestMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 public class DemandeController {
     private final DemandeInterventionService demandeInterventionService;
+    private final DemandeInterventionRepository demandeInterventionRepository;
 
-    public DemandeController(DemandeInterventionService demandeInterventionService) {
+    public DemandeController(DemandeInterventionService demandeInterventionService, DemandeInterventionRepository demandeInterventionRepository) {
         this.demandeInterventionService = demandeInterventionService;
+        this.demandeInterventionRepository = demandeInterventionRepository;
     }
 
     @PostMapping(path = "/demande")
@@ -48,21 +51,7 @@ public class DemandeController {
             @RequestBody AccepterDemandeRequest request) {
         Intervention intervention = demandeInterventionService.accepterDemande(idDemande, request.dateDebut(), request.dateEcheance());
 
-            InterventionDTO interventionDTO = new InterventionDTO(
-                    intervention.getId(),
-                    intervention.getDescription(),
-                    intervention.getDateDebut(),
-                    intervention.getDateFin(),
-                    intervention.getDateFinalReelle(),
-                    intervention.getDateDebutReelle(),
-                    //intervention.getIngenieur(),
-                    intervention.getStatut(),
-                    intervention.getPriorite(),
-                    intervention.getObservation(),
-                    intervention.getDureeReelle(),
-                    //intervention.getDemandeIntervention(),
-                    intervention.getLocalisation()
-            );
+            InterventionDTO interventionDTO = new InterventionDTO(intervention);
         return ResponseEntity.ok(interventionDTO);
     }
 
@@ -81,21 +70,21 @@ public class DemandeController {
         List<DemandeInterventionDTO> listDemande = new ArrayList<>();
 
         for (DemandeIntervention demande : demandeInterventions) {
-            DemandeInterventionDTO dto = new DemandeInterventionDTO(
-                    demande.getId(),
-                    demande.getNom(),
-                    demande.getDescription(),
-                    demande.getPriorite(),
-                    demande.getStatut(),
-                    demande.getTypeIntervention(),
-                    demande.getDateAnnoncement(),
-                    demande.getLocalisation()
-            );
+            DemandeInterventionDTO dto = new DemandeInterventionDTO(demande);
             listDemande.add(dto);
         }
 
         return ResponseEntity.ok(listDemande);
     }
-
+    @GetMapping("/getAllDemande")
+    public ResponseEntity<List<DemandeInterventionDTO>> getAllDemande(){
+        List<DemandeIntervention> alldemande = demandeInterventionRepository.findAll();
+        List<DemandeInterventionDTO> dtos = new ArrayList<>();
+        for (DemandeIntervention demande : alldemande) {
+            DemandeInterventionDTO dto = new DemandeInterventionDTO(demande);
+            dtos.add(dto);
+        }
+        return ResponseEntity.ok(dtos);
+    }
 
 }

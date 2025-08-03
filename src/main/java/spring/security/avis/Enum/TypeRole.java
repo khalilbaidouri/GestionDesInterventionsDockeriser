@@ -6,6 +6,6 @@ package spring.security.avis.Enum;
 public enum TypeRole {
     UTILISATEUR,
     ADMINISTRATEUR,
-    MANAGER,
+    CHEF_DE_DEPARTEMENT,
     INGENIEUR
 }

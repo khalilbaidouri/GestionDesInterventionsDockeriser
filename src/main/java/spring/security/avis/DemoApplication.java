@@ -37,7 +37,7 @@ public class DemoApplication implements CommandLineRunner {
 			userRepo.save(admin);
 		}
 
-		Role managerRole = Role.builder().libelle(TypeRole.MANAGER).build();
+		Role managerRole = Role.builder().libelle(TypeRole.CHEF_DE_DEPARTEMENT).build();
 		User manager = User.builder()
 				.active(true)
 				.nom("manager")

@@ -42,61 +42,54 @@ public class InterventionController {
 
 
     @PutMapping("/{id}/commencer")
-    public ResponseEntity<Intervention> commencer(@PathVariable Long id) throws AccessDeniedException {
-        return ResponseEntity.ok(interventionService.commencerIntervention(id));
+    public ResponseEntity<InterventionDTO> commencer(@PathVariable Long id) throws AccessDeniedException {
+        Intervention intervention = interventionService.commencerIntervention(id);
+        return ResponseEntity.ok(new InterventionDTO(intervention));
     }
 
+
     @PutMapping("/{id}/terminer")
-    public ResponseEntity<Intervention> terminer(@PathVariable Long id, @RequestBody String rapport) throws AccessDeniedException {
-        return ResponseEntity.ok(interventionService.terminerIntervention(id,rapport));
+    public ResponseEntity<InterventionDTO> terminer(@PathVariable Long id, @RequestBody String rapport) throws AccessDeniedException {
+        Intervention intervention = interventionService.terminerIntervention(id, rapport);
+        return ResponseEntity.ok(new InterventionDTO(intervention));
     }
 
     @PutMapping("/{id}/echouer")
-    public ResponseEntity<Intervention> echouer(@PathVariable Long id,@RequestBody String rapport) throws AccessDeniedException {
-        return ResponseEntity.ok(interventionService.echouerIntervention(id,rapport));
+    public ResponseEntity<InterventionDTO> echouer(@PathVariable Long id,@RequestBody String rapport) throws AccessDeniedException {
+        Intervention intervention = interventionService.echouerIntervention(id, rapport);
+        return ResponseEntity.ok(new InterventionDTO(intervention));
     }
     @GetMapping("/afficherLesInterventionsParPriotite")
-    public ResponseEntity<List<Intervention>> afficherLesInterventionsParPriorite(
+    public ResponseEntity<List<InterventionDTO>> afficherLesInterventionsParStatut(
             @RequestParam Priorite priorite) throws AccessDeniedException {
 
         List<Intervention> interventions = interventionService.getInterventionPriorite(priorite);
-        return ResponseEntity.ok(interventions);
+        List<InterventionDTO> interventionDTOS = new ArrayList<>();
+        for (Intervention intervention : interventions) {
+            interventionDTOS.add(new InterventionDTO(intervention));
+        }
+        return ResponseEntity.ok(interventionDTOS);
     }
 
     @GetMapping("/afficherLesInterventionsParStatut")
-    public ResponseEntity<List<InterventionDTO>> afficherLesInterventionsParPriorite(
+    public ResponseEntity<List<InterventionDTO>> afficherLesInterventionsParStatut(
             @RequestParam StatutIntervention statut) throws AccessDeniedException {
 
         List<Intervention> interventions = interventionService.getInterventionByStatut(statut);
         List<InterventionDTO> interventionDTOS = new ArrayList<>();
 
         for (Intervention intervention : interventions) {
-            InterventionDTO dto = new InterventionDTO(
-                    intervention.getId(),
-                    intervention.getDescription(),
-                    intervention.getDateDebut(),
-                    intervention.getDateFin(),
-                    intervention.getDateFinalReelle(),
-                    intervention.getDateDebutReelle(),
-                    //intervention.getIngenieur(),
-                    intervention.getStatut(),
-                    intervention.getPriorite(),
-                    intervention.getObservation(),
-                    intervention.getDureeReelle(),
-                    //intervention.getDemandeIntervention(),
-                    intervention.getLocalisation()
-            );
-            interventionDTOS.add(dto);
+            interventionDTOS.add(new InterventionDTO(intervention));
         }
         return ResponseEntity.ok(interventionDTOS);
     }
     @PutMapping("/{id}")
-    public ResponseEntity<Intervention> modifierIntervention(
+    public ResponseEntity<InterventionDTO> modifierIntervention(
             @PathVariable Long id,
             @RequestBody Intervention nouvelleIntervention) {
 
         Intervention interventionModifiee = interventionService.modifierIntervention(id, nouvelleIntervention);
-        return ResponseEntity.ok(interventionModifiee);
+        return ResponseEntity.ok(new InterventionDTO(interventionModifiee));
     }
 
     @GetMapping("/mesInterventions")
@@ -106,22 +99,7 @@ public class InterventionController {
         List<InterventionDTO> interventionDTOS = new ArrayList<>();
 
         for (Intervention intervention : interventions) {
-            InterventionDTO dto = new InterventionDTO(
-                    intervention.getId(),
-                    intervention.getDescription(),
-                    intervention.getDateDebut(),
-                    intervention.getDateFin(),
-                    intervention.getDateFinalReelle(),
-                    intervention.getDateDebutReelle(),
-                    //intervention.getIngenieur(),
-                    intervention.getStatut(),
-                    intervention.getPriorite(),
-                    intervention.getObservation(),
-                    intervention.getDureeReelle(),
-                    //intervention.getDemandeIntervention(),
-                    intervention.getLocalisation()
-            );
-            interventionDTOS.add(dto);
+            interventionDTOS.add(new InterventionDTO(intervention));
         }
 
         return ResponseEntity.ok(interventionDTOS);
