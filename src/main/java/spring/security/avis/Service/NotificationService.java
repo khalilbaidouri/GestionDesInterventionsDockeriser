@@ -1,5 +1,6 @@
 package spring.security.avis.Service;
 
+import jakarta.transaction.Transactional;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.Authentication;
@@ -24,6 +25,7 @@ import java.util.List;
  * @author $ {USERS}
  **/
 @Service
+@Transactional
 public class NotificationService {
     private final JavaMailSender mailSender;
     private final UserRepo userRepo;
@@ -77,16 +79,24 @@ public class NotificationService {
     }
 
 
-    public List<Notification> getMesNotif(){
+    public List<Notification> getMesNotif() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         User user = userRepo.findByEmail(username);
-        List<Notification> listNotif=new ArrayList<>();
-        for (Notification notification : user.getNotifications()){
-           // notification.setDateLecture(LocalDateTime.now());
+
+        List<Notification> listNotif = new ArrayList<>();
+
+        for (Notification notification : user.getNotifications()) {
+            if (notification.getStatut() == StatutNotification.NON_LUE) {
+                notification.setStatut(StatutNotification.LUE);
+                notification.setDateLecture(LocalDateTime.now());
+                notificationRepository.save(notification);
+            }
             listNotif.add(notification);
         }
+
         return listNotif;
     }
+
 
 }

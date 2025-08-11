@@ -6,6 +6,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import spring.security.avis.Enum.Priorite;
 import spring.security.avis.Enum.StatutDemande;
+import spring.security.avis.Enum.TypeIntervention;
 import spring.security.avis.entity.DemandeIntervention;
 import spring.security.avis.entity.User;
 
@@ -40,7 +41,7 @@ public interface DemandeInterventionRepository extends JpaRepository<DemandeInte
     @Query("SELECT d FROM DemandeIntervention d WHERE d.localisation = :localisation  AND d.statut = :statut AND d.typeIntervention = :typeIntervention AND d.priorite = :priorite")
     Optional<DemandeIntervention> findDemandeInterventionExiste(@Param("localisation") String localisation,
                                                                 @Param("statut") StatutDemande statut,
-                                                                @Param("typeIntervention") String typeIntervention,
+                                                                @Param("typeIntervention") TypeIntervention typeIntervention,
                                                                 @Param("priorite") Priorite priorite
     );
 

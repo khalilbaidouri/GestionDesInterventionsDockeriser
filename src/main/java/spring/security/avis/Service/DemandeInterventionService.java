@@ -1,14 +1,17 @@
 package spring.security.avis.Service;
 
+import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.View;
+import spring.security.avis.DTO.DemandeInterventionDTO;
 import spring.security.avis.Enum.Priorite;
 import spring.security.avis.Enum.StatutDemande;
 import spring.security.avis.Enum.StatutIntervention;
+import spring.security.avis.Enum.TypeIntervention;
 import spring.security.avis.Repo.DemandeInterventionRepository;
 import spring.security.avis.Repo.EvenementRepository;
 import spring.security.avis.Repo.UserRepo;
@@ -22,8 +25,8 @@ import java.util.Optional;
 /**
  * @author $ {USERS}
  **/
-
 @Service
+@Transactional
 public class DemandeInterventionService {
     private final DemandeInterventionRepository demandeInterventionRepository;
     private final UserRepo userRepo;
@@ -36,31 +39,67 @@ public class DemandeInterventionService {
         this.calendrierService = calendrierService;
     }
 
-public void demandeIntervention(DemandeIntervention demandeIntervention) {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    String username = authentication.getName();
 
-    User utilisateur = userRepo.findByEmail(username);
-    demandeIntervention.setStatut(StatutDemande.EN_ATTENTE);
+    public void creerDemande(DemandeInterventionDTO dto) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        User utilisateur = userRepo.findByEmail(username);
 
-    Optional<DemandeIntervention> demandeInterventionExiste = demandeInterventionRepository
-            .findDemandeInterventionExiste(
-                    demandeIntervention.getLocalisation(),
-                    demandeIntervention.getStatut(),
-                    demandeIntervention.getTypeIntervention(),
-                    demandeIntervention.getPriorite()
-            );
+        // Vérification d'existence
+        Optional<DemandeIntervention> existe = demandeInterventionRepository
+                .findDemandeInterventionExiste(
+                        dto.getLocalisation(),
+                        StatutDemande.EN_ATTENTE,
+                        TypeIntervention.valueOf(dto.getTypeIntervention().name()),
+                        dto.getPriorite()
+                );
 
-    if (!demandeInterventionExiste.isPresent()) {
-        demandeIntervention.setDateAnnoncement(LocalDateTime.now());
-        demandeIntervention.setUtilisateur(utilisateur);
-        this.demandeInterventionRepository.save(demandeIntervention);
-    } else {
-        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Une demande similaire existe deja.");
+        if (existe.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Une demande similaire existe déjà.");
+        }
+
+        DemandeIntervention demande = new DemandeIntervention();
+        demande.setNom(dto.getNom());
+        demande.setDescription(dto.getDescription());
+        demande.setPriorite(dto.getPriorite());
+        demande.setStatut(StatutDemande.EN_ATTENTE);
+        demande.setTypeIntervention(dto.getTypeIntervention());
+        demande.setDateAnnoncement(LocalDateTime.now());
+        demande.setLocalisation(dto.getLocalisation());
+        demande.setUtilisateur(utilisateur);
+
+        demandeInterventionRepository.save(demande);
     }
-}
 
-    public Intervention accepterDemande(Long idDemande,LocalDateTime dateDebut, LocalDateTime dateEcheance) {
+
+
+//
+//public void demandeIntervention(DemandeIntervention demandeIntervention) {
+//    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//    String username = authentication.getName();
+//
+//    User utilisateur = userRepo.findByEmail(username);
+//    demandeIntervention.setStatut(StatutDemande.EN_ATTENTE);
+//
+//    Optional<DemandeIntervention> demandeInterventionExiste = demandeInterventionRepository
+//            .findDemandeInterventionExiste(
+//                    demandeIntervention.getLocalisation(),
+//                    demandeIntervention.getStatut(),
+//                    TypeIntervention.valueOf(String.valueOf(demandeIntervention.getTypeIntervention())),
+//                    demandeIntervention.getPriorite()
+//            );
+//
+//    if (!demandeInterventionExiste.isPresent()) {
+//        demandeIntervention.setDateAnnoncement(LocalDateTime.now());
+//        demandeIntervention.setUtilisateur(utilisateur);
+//        this.demandeInterventionRepository.save(demandeIntervention);
+//    } else {
+//        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Une demande similaire existe deja.");
+//    }
+//}
+
+
+    public Intervention accepterDemande(Long idDemande, LocalDateTime dateDebut, LocalDateTime dateEcheance) {
         DemandeIntervention demande = demandeInterventionRepository.findById(idDemande)
                 .orElseThrow(() -> new RuntimeException("Demande non trouvée"));
 

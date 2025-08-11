@@ -1,14 +1,12 @@
 package spring.security.avis.DTO;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import spring.security.avis.Enum.Priorite;
 import spring.security.avis.Enum.StatutDemande;
+import spring.security.avis.Enum.TypeIntervention;
 import spring.security.avis.entity.DemandeIntervention;
-import spring.security.avis.entity.Intervention;
-import spring.security.avis.entity.User;
 
 import java.time.LocalDateTime;
 
@@ -17,13 +15,14 @@ import java.time.LocalDateTime;
  **/
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class DemandeInterventionDTO {
     private Long id;
     private String nom;
     private String description;
     private Priorite priorite;
     private StatutDemande statut;
-    private String typeIntervention;
+    private TypeIntervention typeIntervention;
     private LocalDateTime dateAnnoncement;
     private String localisation;
 

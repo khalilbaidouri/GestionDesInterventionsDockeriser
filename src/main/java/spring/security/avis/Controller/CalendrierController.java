@@ -5,8 +5,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import spring.security.avis.DTO.CalendrierUpdateRequest;
+import spring.security.avis.DTO.InterventionDTO;
+import spring.security.avis.Enum.TypeRole;
 import spring.security.avis.Repo.UserRepo;
 import spring.security.avis.Service.CalendrierService;
+import spring.security.avis.Service.InterventionService;
 import spring.security.avis.entity.Calendrier;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import spring.security.avis.entity.Evenement;
@@ -31,6 +34,7 @@ public class CalendrierController {
 
     private final CalendrierService calendrierService;
     private final UserRepo userRepo;
+    private final InterventionService interventionService;
 
 
 
@@ -104,5 +108,17 @@ public class CalendrierController {
 
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/calendar")
+    public List<InterventionDTO> getInterventionsForCalendar(Authentication authentication) {
+        User user = userRepo.findByEmail(authentication.getName());
+
+        if(user.getRole().getLibelle().equals(TypeRole.ADMINISTRATEUR) || user.getRole().getLibelle().equals(TypeRole.CHEF_DE_DEPARTEMENT)) {
+            return interventionService.getAllInterventions();
+        } else {
+            return interventionService.getInterventionsByIngenieur(user.getId());
+        }
+    }
+
 }
 

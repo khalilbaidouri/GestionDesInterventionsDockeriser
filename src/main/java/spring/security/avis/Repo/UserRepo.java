@@ -3,7 +3,9 @@ package spring.security.avis.Repo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import spring.security.avis.Enum.Priorite;
 import spring.security.avis.Enum.TypeRole;
+import spring.security.avis.entity.Intervention;
 import spring.security.avis.entity.Role;
 import spring.security.avis.entity.User;
 
@@ -23,6 +25,15 @@ public interface UserRepo extends JpaRepository<User,Long> {
     );
     @Query("SELECT u FROM User u WHERE u.role.libelle = :role")
     List<User> findByRole(@Param("role") TypeRole role);
+
+    @Query("SELECT u FROM User u WHERE u.role.libelle = :role")
+    List<User> findAllByRoleLibelle(@Param("role") TypeRole role);
+
+    @Query("SELECT i FROM Intervention i WHERE i.priorite = :priority AND i.ingenieur.id = :userId")
+    List<Intervention> findByPriorityAndUserId(
+            @Param("priority") Priorite priority,
+            @Param("userId") Long userId);
+
 
 
 

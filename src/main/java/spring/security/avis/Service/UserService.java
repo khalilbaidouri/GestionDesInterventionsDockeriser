@@ -71,7 +71,7 @@ public class UserService implements UserDetailsService {
         user.setPassword(encodedPassword);
 
         Role role = new Role();
-        role.setLibelle(TypeRole.UTILISATEUR);
+        role.setLibelle(TypeRole.OPERATEUR);
         user.setRole(role);
 
         User savedUser = userRepo.save(user);
@@ -202,5 +202,14 @@ public class UserService implements UserDetailsService {
         }
     }
 
+    public boolean isAdminOrChefDepartement(String email) {
+        User user = userRepo.findByEmail(email);
+        if (user != null) {
+            if(user.getRole().getLibelle().equals(TypeRole.ADMINISTRATEUR) ||user.getRole().getLibelle().equals(TypeRole.CHEF_DE_DEPARTEMENT)){
+                return true;
+            }
+        }
+        return false;
+    }
 }
 

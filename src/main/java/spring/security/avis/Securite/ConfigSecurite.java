@@ -50,7 +50,6 @@ public class ConfigSecurite {
                                 .requestMatchers(HttpMethod.POST,"/alterPassword").permitAll()
                                 .requestMatchers(HttpMethod.POST,"/refreshToken").permitAll()
                                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/avis").hasAuthority("ROLEADMINISTRATEUR")
                                 .requestMatchers("/mesInfo").authenticated()
                                 .anyRequest().authenticated()
                 )
@@ -62,13 +61,12 @@ public class ConfigSecurite {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(List.of("http://localhost:*"));
+        configuration.setAllowedOrigins(List.of("http://localhost:3000")); // L'URL de votre app React
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         configuration.setAllowCredentials(true);
-
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
+        source.registerCorsConfiguration("/**", configuration); // Appliquer cette config à toutes les routes
         return source;
     }
 

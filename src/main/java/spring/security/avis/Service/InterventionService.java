@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import spring.security.avis.DTO.InterventionDTO;
 import spring.security.avis.Enum.*;
 import spring.security.avis.Repo.*;
 import spring.security.avis.entity.*;
@@ -123,7 +124,7 @@ public class InterventionService {
                 .orElseThrow(() -> new RuntimeException("Intervention non trouvee"));
 
         if (intervention.getIngenieur() == null || !intervention.getIngenieur().getId().equals(utilisateur.getId())) {
-            throw new AccessDeniedException("Vous n'etes pas autorise à commencer cette intervention");
+            throw new AccessDeniedException("Vous n'etes pas autorise pour cette intervention");
         }
 
 
@@ -282,5 +283,46 @@ public List<Intervention> getInterventionByStatut(StatutIntervention statut) thr
     }
 
 
+    public List<InterventionDTO> getAllInterventions() {
+        List<Intervention> interventions = interventionRepository.findAll();
+        List<InterventionDTO> dtos = new ArrayList<>();
 
+        for (Intervention intervention : interventions) {
+            dtos.add(new InterventionDTO(intervention));
+        }
+
+        return dtos;
+    }
+
+    public List<InterventionDTO> getInterventionsByIngenieur(Long id) {
+        List<Intervention> interventions = interventionRepository.findByIngenieurId(id);
+        List<InterventionDTO> dtos = new ArrayList<>();
+
+        for (Intervention intervention : interventions) {
+            dtos.add(new InterventionDTO(intervention));
+        }
+
+        return dtos;
+    }
+
+    public List<Intervention> findByPriorite(Priorite priorite, String currentUserEmail) {
+        // Si ADMIN ou CHEF_DEPARTEMENT, voir toutes les interventions
+        if (userService.isAdminOrChefDepartement(currentUserEmail)) {
+            return interventionRepository.findByPriorite(priorite);
+        }
+        // Sinon, seulement les interventions assignées
+        return interventionRepository.findByPrioriteAndIngenieurEmail(priorite, currentUserEmail);
+    }
+
+    public List<Intervention> findByPriorityAndUserId(Priorite priority, Long userId) {
+        return findByPriorityAndUserId(priority,userId);
+    }
+
+    public List<Intervention> findByPriorityAndUserEmail(Priorite priority, String email) {
+        return interventionRepository.findByPriorityAndUserEmail(priority, email);
+    }
+
+    public List<Intervention> findByPriority(Priorite priority) {
+        return interventionRepository.findByPriorite(priority);
+    }
 }

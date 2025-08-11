@@ -14,6 +14,7 @@ import spring.security.avis.DTO.AuthDto;
 import spring.security.avis.DTO.ProfilUpdateRequest;
 import spring.security.avis.DTO.UserRequestDTO;
 import spring.security.avis.DTO.UserResponseDTO;
+import spring.security.avis.Enum.TypeRole;
 import spring.security.avis.Repo.InterventionRepository;
 import spring.security.avis.Repo.UserRepo;
 import spring.security.avis.Securite.JwtService;
@@ -21,7 +22,9 @@ import spring.security.avis.Service.InterventionService;
 import spring.security.avis.Service.UserService;
 import spring.security.avis.entity.User;
 
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
@@ -101,7 +104,7 @@ public class UserController {
                 user.getEmail(),
                 user.getRole().getLibelle(),
                 user.getMatricule(),
-                user.getPassword()
+                null
         );
 
         return ResponseEntity.ok(userRequestDTO);
@@ -130,4 +133,16 @@ public class UserController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @GetMapping("/ingenieurs")
+    public ResponseEntity<List<UserResponseDTO>> getAllIngenieurs() {
+        List<User> ingenieurs = userRepo.findAllByRoleLibelle(TypeRole.INGENIEUR);
+
+        List<UserResponseDTO> dtos = ingenieurs.stream()
+                .map(UserResponseDTO::new)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(dtos);
+    }
+
 }

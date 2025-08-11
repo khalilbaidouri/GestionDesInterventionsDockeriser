@@ -1,5 +1,6 @@
 package spring.security.avis.Controller;
 
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,22 +21,27 @@ import java.util.List;
 /**
  * @author $ {USERS}
  **/
+@AllArgsConstructor
 @RestController
 @RequestMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
 public class DemandeController {
     private final DemandeInterventionService demandeInterventionService;
     private final DemandeInterventionRepository demandeInterventionRepository;
 
-    public DemandeController(DemandeInterventionService demandeInterventionService, DemandeInterventionRepository demandeInterventionRepository) {
-        this.demandeInterventionService = demandeInterventionService;
-        this.demandeInterventionRepository = demandeInterventionRepository;
-    }
+
 
     @PostMapping(path = "/demande")
-    public ResponseEntity<Void> creerDemande(@RequestBody DemandeIntervention demandeIntervention) {
-        demandeInterventionService.demandeIntervention(demandeIntervention);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    public ResponseEntity<String> creerDemande(@RequestBody DemandeInterventionDTO dto) {
+        demandeInterventionService.creerDemande(dto);
+        return ResponseEntity.ok("Demande enregistrée avec succès");
     }
+
+//    @PostMapping(path = "/demande")
+//    public ResponseEntity<Void> creerDemande(@RequestBody DemandeIntervention demandeIntervention) {
+//        demandeInterventionService.demandeIntervention(demandeIntervention);
+//        return ResponseEntity.status(HttpStatus.CREATED).build();
+//    }
+
 
     @PostMapping(path = "/{idIntervention}/modifier")
     public ResponseEntity<Void> modifierDemande(@PathVariable("idIntervention") Long idDemande,

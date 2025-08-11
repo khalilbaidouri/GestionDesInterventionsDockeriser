@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import spring.security.avis.Enum.Priorite;
 import spring.security.avis.Enum.StatutDemande;
+import spring.security.avis.Enum.TypeIntervention;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -30,9 +31,9 @@ public class DemandeIntervention {
     @Enumerated(EnumType.STRING)
     private StatutDemande statut;
 
-
+    @Enumerated(EnumType.STRING)
     @Column(name = "type_intervention")
-    private String typeIntervention;
+    private TypeIntervention typeIntervention;
 
 //    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
 //    @Column(name = "date_creation")

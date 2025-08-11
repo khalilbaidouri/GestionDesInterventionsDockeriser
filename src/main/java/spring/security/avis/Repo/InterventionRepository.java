@@ -78,6 +78,16 @@ public interface InterventionRepository extends JpaRepository<Intervention, Long
             LocalDateTime dateFin
     );
 
+    List<Intervention> findByIngenieurId(Long id);
+
+    List<Intervention> findByPrioriteAndIngenieurEmail(Priorite priorite, String email);
+
+    @Query("SELECT i FROM Intervention i " +
+            "WHERE i.priorite = :priority " +
+            "AND i.ingenieur.email = :email")
+    List<Intervention> findByPriorityAndUserEmail(
+            @Param("priority") Priorite priority,
+            @Param("email") String email);
 
 
 
