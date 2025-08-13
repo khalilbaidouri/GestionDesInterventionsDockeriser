@@ -36,6 +36,26 @@ public class DemandeController {
         return ResponseEntity.ok("Demande enregistrée avec succès");
     }
 
+
+
+    @PostMapping("/{id}/annuler")
+    public ResponseEntity<Void> annulerDemande(@PathVariable Long id) {
+        try {
+            demandeInterventionService.annulerDemande(id);
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException ex) {
+            String message = ex.getMessage();
+            if (message.contains("n'existe pas")) {
+                return ResponseEntity.notFound().build(); // 404 si demande non trouvée
+            } else if (message.contains("autorise")) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build(); // 403 si pas autorisé
+            } else if (message.contains("authentifié")) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build(); // 401 si non authentifié
+            }
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
 //    @PostMapping(path = "/demande")
 //    public ResponseEntity<Void> creerDemande(@RequestBody DemandeIntervention demandeIntervention) {
 //        demandeInterventionService.demandeIntervention(demandeIntervention);
@@ -43,14 +63,20 @@ public class DemandeController {
 //    }
 
 
-    @PostMapping(path = "/{idIntervention}/modifier")
+/*    @PutMapping(path = "/{idIntervention}/modifier")
     public ResponseEntity<Void> modifierDemande(@PathVariable("idIntervention") Long idDemande,
                                                 @RequestBody DemandeIntervention demandeIntervention) {
         demandeInterventionService.modifierDemande(idDemande, demandeIntervention);
         return ResponseEntity.ok().build();
+    }*/
+
+    @PutMapping(path = "/{idIntervention}/modifier")
+    public ResponseEntity<DemandeInterventionDTO> modifierDemande(@PathVariable("idIntervention") Long idDemande,
+                                                               @RequestBody DemandeIntervention demandeIntervention) {
+        DemandeIntervention updated = demandeInterventionService.modifierDemande(idDemande,demandeIntervention);
+        DemandeInterventionDTO dto = new DemandeInterventionDTO(updated);
+        return ResponseEntity.ok(dto);
     }
-
-
     @PostMapping("/{idDemande}/accepter")
     public ResponseEntity<InterventionDTO> accepterDemande(
             @PathVariable Long idDemande,
@@ -93,4 +119,23 @@ public class DemandeController {
         return ResponseEntity.ok(dtos);
     }
 
+    @GetMapping("/mesDemandes")
+    public ResponseEntity<List<DemandeIntervention>> getMesDemandes() {
+        try {
+            List<DemandeIntervention> demandes = demandeInterventionService.getMesDemande();
+            return ResponseEntity.ok(demandes);
+        } catch (RuntimeException ex) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+    }
+
+    @DeleteMapping("/{id}/supprimer")
+    public ResponseEntity<String> supprimerDemande(@PathVariable Long id) {
+        try {
+            demandeInterventionService.supprimerDemande(id);
+            return ResponseEntity.ok("Demande supprimée avec succès");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
 }

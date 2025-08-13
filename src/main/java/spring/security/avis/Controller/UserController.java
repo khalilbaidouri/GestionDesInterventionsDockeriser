@@ -145,4 +145,20 @@ public class UserController {
         return ResponseEntity.ok(dtos);
     }
 
+
+    @DeleteMapping("/{email}/supprimerUser")
+    public ResponseEntity<UserResponseDTO> supprimerUser(@PathVariable String email) {
+        try {
+            UserResponseDTO deletedUser = userService.supprimerUser(email);
+            return ResponseEntity.ok(deletedUser);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+    }
+
+    @GetMapping("/listeUesrs")
+    public ResponseEntity<List<UserResponseDTO>> listerUsers() {
+        return ResponseEntity.ok(userService.listerUsers());
+    }
+
 }

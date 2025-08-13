@@ -37,7 +37,6 @@ public class UserService implements UserDetailsService {
     private final NotificationRepository notificationRepository;
 
 
-
     public UserService(UserRepo userRepo, BCryptPasswordEncoder bCryptPasswordEncoder, ValidationService validationService, ValidationRepo validationRepo, TokenRepo tokenRepo, InterventionRepository interventionRepository, NotificationRepository notificationRepository) {
         this.userRepo = userRepo;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
@@ -89,23 +88,23 @@ public class UserService implements UserDetailsService {
     }
 
 
-    public void activation(Map<String,String> activation){
-        Validation validation= this.validationService.getValidationByCode(activation.get("code"));
-        if(Instant.now().isAfter(validation.getDateExpiration())){
+    public void activation(Map<String, String> activation) {
+        Validation validation = this.validationService.getValidationByCode(activation.get("code"));
+        if (Instant.now().isAfter(validation.getDateExpiration())) {
             System.out.println("Date expiration : " + validation.getDateExpiration());
             System.out.println("Date actuelle : " + Instant.now());
             throw new RuntimeException("votre code est expire");
         }
-        User userActiver=this.userRepo.findById(validation.getUser().getId()).orElseThrow(()
+        User userActiver = this.userRepo.findById(validation.getUser().getId()).orElseThrow(()
                 -> new RuntimeException("user not found"));
 
-         userActiver.setActive(true);
-         validation.setDateActviation(Instant.now());
-         this.validationRepo.save(validation);
-         this.userRepo.save(userActiver);
+        userActiver.setActive(true);
+        validation.setDateActviation(Instant.now());
+        this.validationRepo.save(validation);
+        this.userRepo.save(userActiver);
     }
 
-        public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         User utilisateur = userRepo.findByEmail(email);
         if (utilisateur == null) {
             throw new UsernameNotFoundException("Aucun utilisateur trouvé avec l'email : " + email);
@@ -122,8 +121,8 @@ public class UserService implements UserDetailsService {
 
     public void newPassword(Map<String, String> parametre) {
         User user = (User) this.loadUserByUsername(parametre.get("email"));
-        Validation validation  = validationService.getValidationByCode(parametre.get("code"));
-        if(validation.getUser().getUsername().equals(user.getUsername())){
+        Validation validation = validationService.getValidationByCode(parametre.get("code"));
+        if (validation.getUser().getUsername().equals(user.getUsername())) {
             String newPassword = bCryptPasswordEncoder.encode(parametre.get("password"));
             user.setPassword(newPassword);
             validation.setDateActviation(Instant.now());
@@ -132,8 +131,7 @@ public class UserService implements UserDetailsService {
     }
 
 
-
-  public Optional<User> ingenieurDispo(LocalDateTime dateDebut, LocalDateTime dateEcheance) {
+    public Optional<User> ingenieurDispo(LocalDateTime dateDebut, LocalDateTime dateEcheance) {
         List<User> ingenieurs = userRepo.findByRole(TypeRole.INGENIEUR);
 
         for (User ingenieur : ingenieurs) {
@@ -160,7 +158,7 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    public List<Notification> getMesNotifications(){
+    public List<Notification> getMesNotifications() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
 
@@ -205,11 +203,52 @@ public class UserService implements UserDetailsService {
     public boolean isAdminOrChefDepartement(String email) {
         User user = userRepo.findByEmail(email);
         if (user != null) {
-            if(user.getRole().getLibelle().equals(TypeRole.ADMINISTRATEUR) ||user.getRole().getLibelle().equals(TypeRole.CHEF_DE_DEPARTEMENT)){
+            if (user.getRole().getLibelle().equals(TypeRole.ADMINISTRATEUR) || user.getRole().getLibelle().equals(TypeRole.CHEF_DE_DEPARTEMENT)) {
                 return true;
             }
         }
         return false;
     }
-}
 
+    public UserResponseDTO supprimerUser(String email) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+
+        User admin = userRepo.findByEmail(username);
+        User user = userRepo.findByEmail(email);
+
+        if (user == null) {
+            throw new RuntimeException("User n'existe pas.");
+        }
+
+        if (admin.getRole().getLibelle().equals(TypeRole.ADMINISTRATEUR)) {
+            userRepo.delete(user);
+            return new UserResponseDTO(user);
+        }
+
+        throw new RuntimeException("Accès refusé : vous n'êtes pas administrateur.");
+    }
+
+
+    public List<UserResponseDTO> listerUsers() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        User admin = userRepo.findByEmail(username);
+
+        if (admin == null || !admin.getRole().getLibelle().equals(TypeRole.ADMINISTRATEUR)) {
+            throw new RuntimeException("Accès refusé : vous n'êtes pas administrateur.");
+        }
+
+        List<User> users = userRepo.findAll();
+        List<UserResponseDTO> usersDto = new ArrayList<>();
+
+        for (User user : users) {
+            usersDto.add(new UserResponseDTO(user));
+        }
+
+        return usersDto;
+    }
+
+
+
+}

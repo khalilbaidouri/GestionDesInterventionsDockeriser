@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import spring.security.avis.Enum.Priorite;
 import spring.security.avis.Enum.StatutIntervention;
+import spring.security.avis.Enum.TypeIntervention;
 import spring.security.avis.entity.*;
 import java.time.format.DateTimeFormatter;
 
@@ -28,6 +29,7 @@ public class InterventionDTO {
         private String observation;
         private Long dureeReelle;
         private String localisation;
+        private TypeIntervention typeIntervention;
 
         public InterventionDTO(Intervention intervention) {
                 this.id = intervention.getId();
@@ -41,6 +43,7 @@ public class InterventionDTO {
                 this.observation = intervention.getObservation();
                 this.dureeReelle = intervention.getDureeReelle();
                 this.localisation = intervention.getLocalisation();
+                this.typeIntervention = intervention.getTypeIntervention();
         }
 
 

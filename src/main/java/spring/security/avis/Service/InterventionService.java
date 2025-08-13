@@ -13,6 +13,7 @@ import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static spring.security.avis.Service.UserService.calculerDureeEnMinutes;
 
@@ -208,6 +209,8 @@ public List<Intervention> getInterventionByStatut(StatutIntervention statut) thr
         interventionExistante.setIngenieur(nouvelleIntervention.getIngenieur());
         interventionExistante.setPriorite(nouvelleIntervention.getPriorite());
         interventionExistante.setDescription(nouvelleIntervention.getDescription());
+        interventionExistante.setLocalisation(nouvelleIntervention.getLocalisation());
+        interventionExistante.setTypeIntervention(nouvelleIntervention.getTypeIntervention());
 
         return interventionRepository.save(interventionExistante);
     }
@@ -325,4 +328,75 @@ public List<Intervention> getInterventionByStatut(StatutIntervention statut) thr
     public List<Intervention> findByPriority(Priorite priority) {
         return interventionRepository.findByPriorite(priority);
     }
+
+   /* public void supprimerIntervention(Long id){
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+        User admin = userRepository.findByEmail(username);
+        Optional<Intervention> interventionOpt = interventionRepository.findById(id);
+        Intervention intervention = interventionOpt.get();
+        DemandeIntervention demandeIntervention = intervention.getDemandeIntervention();
+        if (intervention == null) {
+            throw new RuntimeException("Le intervention n'existe pas");
+        }
+        if(admin == null){
+            throw new RuntimeException("Utilisateur non authentifié");
+        }
+        if(admin.getRole().getLibelle().equals(TypeRole.ADMINISTRATEUR)){
+            if(intervention.getStatut().equals(StatutIntervention.PLANIFIEE)){
+                User assigne = intervention.getIngenieur();
+                Notification notification = new Notification();
+                notification.setDestinataire(assigne);
+                notification.setDateEnvoi(LocalDateTime.now());
+                notification.setType(TypeNotification.INFO);
+                notification.setStatut(StatutNotification.NON_LUE);
+                notification.setMessage("L'intervention \"" + intervention.getDescription() + "\" dans " + intervention.getLocalisation() + " est annulée");
+                notificationRepository.save(notification);
+                interventionRepository.delete(intervention);
+
+            }
+            else {
+                interventionRepository.delete(intervention);
+                demandeInterventionRepository.delete(demandeIntervention);
+            }
+        }
+    }*/
+   public void supprimerIntervention(Long id) {
+       Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+       String username = auth.getName();
+       User admin = userRepository.findByEmail(username);
+
+       if (admin == null) {
+           throw new RuntimeException("Utilisateur non authentifié");
+       }
+
+       Intervention intervention = interventionRepository.findById(id)
+               .orElseThrow(() -> new RuntimeException("L'intervention n'existe pas"));
+
+       DemandeIntervention demandeIntervention = intervention.getDemandeIntervention();
+
+       if (!admin.getRole().getLibelle().equals(TypeRole.ADMINISTRATEUR)) {
+           throw new RuntimeException("Accès refusé : seul un administrateur peut supprimer cette intervention");
+       }
+
+       if (intervention.getStatut().equals(StatutIntervention.PLANIFIEE)) {
+           User assigne = intervention.getIngenieur();
+           Notification notification = new Notification();
+           notification.setDestinataire(assigne);
+           notification.setDateEnvoi(LocalDateTime.now());
+           notification.setType(TypeNotification.INFO);
+           notification.setStatut(StatutNotification.NON_LUE);
+           notification.setMessage("L'intervention \"" + intervention.getDescription() + "\" dans " + intervention.getLocalisation() + " est annulée");
+           notificationRepository.save(notification);
+
+           interventionRepository.delete(intervention);
+       } else {
+           interventionRepository.delete(intervention);
+           if (demandeIntervention != null) {
+               demandeInterventionRepository.delete(demandeIntervention);
+           }
+       }
+   }
+
+
 }

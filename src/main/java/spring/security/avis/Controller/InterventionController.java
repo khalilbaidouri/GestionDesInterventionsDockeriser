@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -103,7 +104,7 @@ public class InterventionController {
         }
         return ResponseEntity.ok(interventionDTOS);
     }
-    @PutMapping("/{id}")
+    @PutMapping("/{id}/modifierIntervention")
     public ResponseEntity<InterventionDTO> modifierIntervention(
             @PathVariable Long id,
             @RequestBody Intervention nouvelleIntervention) {
@@ -228,6 +229,16 @@ public class InterventionController {
         return ResponseEntity.ok(interventions.stream()
                 .map(InterventionDTO::new)
                 .collect(Collectors.toList()));
+    }
+
+    @DeleteMapping("/{id}/supprimer")
+    public ResponseEntity<String> supprimerIntervention(@PathVariable Long id) {
+        try {
+            interventionService.supprimerIntervention(id);
+            return ResponseEntity.ok("Intervention supprimée avec succès");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
 

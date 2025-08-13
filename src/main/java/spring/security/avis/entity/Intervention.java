@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import spring.security.avis.Enum.Priorite;
 import spring.security.avis.Enum.StatutIntervention;
+import spring.security.avis.Enum.TypeIntervention;
+
 import java.util.List;
 import java.time.LocalDateTime;
 
@@ -38,6 +40,10 @@ public class Intervention {
 
     @Enumerated(EnumType.STRING)
     private Priorite priorite;
+    @Enumerated(EnumType.STRING)
+
+    @Column(name = "type_intervention")
+    private TypeIntervention typeIntervention;
 
     @Column(columnDefinition = "TEXT")
     private String observation; // hadi ghandirha boolean meli chi ingenieur ikamal chi intervention matvalida tay iobservi chef de projet (observation ola validation)

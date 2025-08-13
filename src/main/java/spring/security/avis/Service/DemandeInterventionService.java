@@ -8,17 +8,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.View;
 import spring.security.avis.DTO.DemandeInterventionDTO;
-import spring.security.avis.Enum.Priorite;
-import spring.security.avis.Enum.StatutDemande;
-import spring.security.avis.Enum.StatutIntervention;
-import spring.security.avis.Enum.TypeIntervention;
-import spring.security.avis.Repo.DemandeInterventionRepository;
-import spring.security.avis.Repo.EvenementRepository;
-import spring.security.avis.Repo.UserRepo;
+import spring.security.avis.Enum.*;
+import spring.security.avis.Repo.*;
 import spring.security.avis.entity.*;
 
 import java.nio.file.AccessDeniedException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,11 +29,16 @@ public class DemandeInterventionService {
     private final UserRepo userRepo;
     private final EvenementRepository evenementRepository;
     private final CalendrierService calendrierService;
-    public DemandeInterventionService(DemandeInterventionRepository demandeInterventionRepository, View error, UserRepo userRepo, EvenementRepository evenementRepository, CalendrierService calendrierService) {
+    private final InterventionRepository interventionRepository;
+    private final NotificationRepository notificationRepository;
+
+    public DemandeInterventionService(DemandeInterventionRepository demandeInterventionRepository, View error, UserRepo userRepo, EvenementRepository evenementRepository, CalendrierService calendrierService, InterventionRepository interventionRepository, NotificationRepository notificationRepository) {
         this.demandeInterventionRepository = demandeInterventionRepository;
         this.userRepo = userRepo;
         this.evenementRepository = evenementRepository;
         this.calendrierService = calendrierService;
+        this.interventionRepository = interventionRepository;
+        this.notificationRepository = notificationRepository;
     }
 
 
@@ -69,6 +71,8 @@ public class DemandeInterventionService {
         demande.setUtilisateur(utilisateur);
 
         demandeInterventionRepository.save(demande);
+        demandeInterventionRepository.flush();
+
     }
 
 
@@ -144,7 +148,7 @@ public class DemandeInterventionService {
         return intervention;
     }
 
-    public void modifierDemande(Long id, DemandeIntervention demandeIntervention) {
+   /* public void modifierDemande(Long id, DemandeIntervention demandeIntervention) {
         Optional<DemandeIntervention> demandeRecuperer = demandeInterventionRepository.findById(id);
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -153,6 +157,9 @@ public class DemandeInterventionService {
 
         if (demandeRecuperer.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Demande introuvable avec id: " + id);
+        }
+        if(demandeRecuperer.get().getStatut().equals(StatutDemande.EN_COURS)){
+            throw new RuntimeException("demande deja EN_COURS");
         }
 
         DemandeIntervention demande = demandeRecuperer.get();
@@ -168,10 +175,55 @@ public class DemandeInterventionService {
 
         demandeInterventionRepository.save(demande);
     }
+*/
 
+    public DemandeIntervention modifierDemande(Long id, DemandeIntervention demandeIntervention) {
+        // Récupération en une seule opération avec orElseThrow
+        DemandeIntervention demande = demandeInterventionRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Demande introuvable avec id: " + id));
+
+        // Vérification des autorisations
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User utilisateur = userRepo.findByEmail(authentication.getName());
+
+        if (!demande.getUtilisateur().getId().equals(utilisateur.getId())) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Vous n'êtes pas autorisé à modifier cette demande.");
+        }
+
+        // Validation métier avec exception spécifique
+        if (demande.getStatut().equals(StatutDemande.EN_COURS)) {
+            throw new IllegalStateException("Impossible de modifier une demande déjà EN_COURS");
+        }
+
+        // Mise à jour des champs modifiables
+        demande.setLocalisation(demandeIntervention.getLocalisation());
+        demande.setDescription(demandeIntervention.getDescription());
+        demande.setNom(demandeIntervention.getNom());
+        demande.setTypeIntervention(demandeIntervention.getTypeIntervention());
+
+        // Sauvegarde et retour de l'entité mise à jour
+        return demandeInterventionRepository.save(demande);
+    }
     public List<DemandeIntervention> getDemandeInterventionByPriorite(Priorite etat) throws AccessDeniedException {
         List<DemandeIntervention> demandeInterventions = demandeInterventionRepository.findByPriorite(etat);
         return demandeInterventions;
+    }
+
+    public List<DemandeIntervention> getMesDemande() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new RuntimeException("Utilisateur non authentifié");
+        }
+
+        String username = authentication.getName();
+        User utilisateur = userRepo.findByEmail(username);
+
+        if (utilisateur == null) {
+            throw new RuntimeException("Utilisateur introuvable");
+        }
+
+        return demandeInterventionRepository.findByUtilisateur(utilisateur);
     }
 
     public void refuserDemande(Long idDemande) {
@@ -184,6 +236,114 @@ public class DemandeInterventionService {
             throw new RuntimeException("Impossible de refuser : la demande  deja traitee");
         }
     }
+
+    public void annulerDemande(Long id) {
+        Optional<DemandeIntervention> demandeInterventionOpt = demandeInterventionRepository.findById(id);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        User user = userRepo.findByEmail(email);
+
+        if (!demandeInterventionOpt.isPresent()) {
+            throw new RuntimeException("La demande d'intervention n'existe pas");
+        }
+        if (user == null) {
+            throw new RuntimeException("Utilisateur non authentifié");
+        }
+
+        DemandeIntervention demandeIntervention = demandeInterventionOpt.get();
+
+        if (demandeIntervention.getUtilisateur().equals(user)) {
+            demandeInterventionRepository.delete(demandeIntervention);
+        } else {
+            throw new RuntimeException("Vous n'êtes pas autorisé à annuler cette demande");
+        }
+    }
+
+  /*  public void supprimerDemande(Long id) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        User adminOrCreator = userRepo.findByEmail(email);
+        Optional<DemandeIntervention> demande = demandeInterventionRepository.findById(id);
+        if (adminOrCreator == null) {
+            throw new RuntimeException("Utilisateur non authentifié");
+        }
+        DemandeIntervention demandeIntervention = demande.get();
+        if(demandeIntervention.getUtilisateur().equals(adminOrCreator) || adminOrCreator.getRole().getLibelle().equals(TypeRole.ADMINISTRATEUR)) {
+            if(demandeIntervention.getStatut().equals(StatutDemande.EN_ATTENTE)) {
+                this.demandeInterventionRepository.delete(demandeIntervention);
+            }
+            if(demandeIntervention.getStatut().equals(StatutDemande.APPROUVEE)) {
+                Intervention intervention = demandeIntervention.getIntervention();
+                User userAssigne = intervention.getIngenieur();
+                for(Intervention i : userAssigne.getInterventions()) {
+                    if(i.equals(intervention)) {
+                        interventionRepository.delete(i);
+                        demandeInterventionRepository.delete(demandeIntervention);
+                    }
+                }
+                Notification notification = new Notification();
+                notification.setDestinataire(userAssigne);
+                notification.setDateEnvoi(LocalDateTime.now());
+                notification.setType(TypeNotification.INFO);
+                notification.setStatut(StatutNotification.NON_LUE);
+                notification.setMessage("l'intervention:"+intervention.getDescription()+"dans:"+intervention.getLocalisation()+"est annuler");
+            }
+        }
+
+    }*/
+
+
+    public void supprimerDemande(Long id) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        User adminOrCreator = userRepo.findByEmail(email);
+
+        if (adminOrCreator == null) {
+            throw new RuntimeException("Utilisateur non authentifié");
+        }
+
+        Optional<DemandeIntervention> optDemande = demandeInterventionRepository.findById(id);
+        if (optDemande.isEmpty()) {
+            throw new RuntimeException("Demande introuvable");
+        }
+
+        DemandeIntervention demandeIntervention = optDemande.get();
+
+        boolean isCreator = demandeIntervention.getUtilisateur().equals(adminOrCreator);
+        boolean isAdmin = adminOrCreator.getRole().getLibelle().equals(TypeRole.ADMINISTRATEUR);
+        if (!isCreator && !isAdmin) {
+            throw new RuntimeException("Accès refusé");
+        }
+
+        // Cas EN_ATTENTE : suppression simple
+        if (demandeIntervention.getStatut().equals(StatutDemande.EN_ATTENTE)) {
+            demandeInterventionRepository.delete(demandeIntervention);
+            return;
+        }
+
+        // Cas APPROUVEE : suppression intervention + demande + notification si destinataire présent
+        if (demandeIntervention.getStatut().equals(StatutDemande.APPROUVEE)) {
+            Intervention intervention = demandeIntervention.getIntervention();
+            User userAssigne = intervention.getIngenieur();
+
+            interventionRepository.delete(intervention);
+            demandeInterventionRepository.delete(demandeIntervention);
+
+            if (userAssigne != null) {
+                Notification notification = new Notification();
+                notification.setDestinataire(userAssigne);
+                notification.setDateEnvoi(LocalDateTime.now());
+                notification.setType(TypeNotification.INFO);
+                notification.setStatut(StatutNotification.NON_LUE);
+                notification.setMessage("L'intervention \"" + intervention.getDescription() + "\" dans " + intervention.getLocalisation() + " est annulée");
+                notificationRepository.save(notification);
+            } else {
+                // Optionnel : log pour savoir que l'intervention n'avait pas d'ingénieur assigné
+                System.out.println("Pas de destinataire pour l'intervention id=" + intervention.getId());
+            }
+        }
+    }
+
 
 
 }
