@@ -1,5 +1,6 @@
 package spring.security.avis.Repo;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -44,6 +45,17 @@ public interface DemandeInterventionRepository extends JpaRepository<DemandeInte
                                                                 @Param("typeIntervention") TypeIntervention typeIntervention,
                                                                 @Param("priorite") Priorite priorite
     );
+
+
+    @Query("SELECT d FROM DemandeIntervention d JOIN FETCH d.utilisateur u")
+    List<DemandeIntervention> findAllWithUtilisateur();
+
+    @Query("SELECT d FROM DemandeIntervention d JOIN FETCH d.utilisateur WHERE d.utilisateur.email = :email")
+    List<DemandeIntervention> findByUtilisateurEmailWithUser(@Param("email") String email);
+
+    // Ou avec @EntityGraph :
+    @EntityGraph(attributePaths = {"utilisateur"})
+    List<DemandeIntervention> findAll();
 
 
 }

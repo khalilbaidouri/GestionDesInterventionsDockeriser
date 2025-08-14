@@ -4,15 +4,20 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import spring.security.avis.DTO.AccepterDemandeRequest;
 import spring.security.avis.DTO.DemandeInterventionDTO;
 import spring.security.avis.DTO.InterventionDTO;
+import spring.security.avis.DTO.UserResponseDTO;
 import spring.security.avis.Enum.Priorite;
 import spring.security.avis.Repo.DemandeInterventionRepository;
+import spring.security.avis.Repo.UserRepo;
 import spring.security.avis.Service.DemandeInterventionService;
 import spring.security.avis.entity.DemandeIntervention;
 import spring.security.avis.entity.Intervention;
+import spring.security.avis.entity.User;
 
 import java.nio.file.AccessDeniedException;
 import java.util.ArrayList;
@@ -27,7 +32,7 @@ import java.util.List;
 public class DemandeController {
     private final DemandeInterventionService demandeInterventionService;
     private final DemandeInterventionRepository demandeInterventionRepository;
-
+    private final UserRepo userRepo;
 
 
     @PostMapping(path = "/demande")
@@ -119,15 +124,46 @@ public class DemandeController {
         return ResponseEntity.ok(dtos);
     }
 
-    @GetMapping("/mesDemandes")
-    public ResponseEntity<List<DemandeIntervention>> getMesDemandes() {
+   /* @GetMapping("/mesDemandes")
+    public ResponseEntity<List<DemandeInterventionDTO>> getMesDemandes() {
         try {
             List<DemandeIntervention> demandes = demandeInterventionService.getMesDemande();
-            return ResponseEntity.ok(demandes);
+            List<DemandeInterventionDTO> dtos = new ArrayList<>();
+            for (DemandeIntervention demande : demandes) {
+                DemandeInterventionDTO dto = new DemandeInterventionDTO(demande);
+                dtos.add(dto);
+            }
+            return ResponseEntity.ok(dtos);
         } catch (RuntimeException ex) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-    }
+    }*/
+   @GetMapping("/mesDemandes")
+   public ResponseEntity<List<DemandeInterventionDTO>> getMesDemandes() {
+       try {
+           // Récupérer l'utilisateur connecté
+           Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+           String email = authentication.getName();
+           User currentUser = userRepo.findByEmail(email);
+
+           List<DemandeIntervention> demandes = demandeInterventionService.getMesDemande();
+           List<DemandeInterventionDTO> dtos = new ArrayList<>();
+
+           for (DemandeIntervention demande : demandes) {
+               DemandeInterventionDTO dto = new DemandeInterventionDTO(demande);
+
+               if (demande.getUtilisateur() != null) {
+                   dto.setUtilisateur(new UserResponseDTO(demande.getUtilisateur()));
+               }
+
+               dtos.add(dto);
+           }
+
+           return ResponseEntity.ok(dtos);
+       } catch (RuntimeException ex) {
+           return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+       }
+   }
 
     @DeleteMapping("/{id}/supprimer")
     public ResponseEntity<String> supprimerDemande(@PathVariable Long id) {

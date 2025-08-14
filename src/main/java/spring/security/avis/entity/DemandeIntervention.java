@@ -49,7 +49,7 @@ public class DemandeIntervention {
 
     private String localisation;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "utilisateur_id")
     private User utilisateur;
 

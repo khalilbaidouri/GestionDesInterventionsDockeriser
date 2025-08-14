@@ -25,6 +25,7 @@ public class DemandeInterventionDTO {
     private TypeIntervention typeIntervention;
     private LocalDateTime dateAnnoncement;
     private String localisation;
+    private UserResponseDTO utilisateur;
 
     public DemandeInterventionDTO(DemandeIntervention demande) {
         this.id =   demande.getId();
@@ -35,6 +36,9 @@ public class DemandeInterventionDTO {
         this.typeIntervention =   demande.getTypeIntervention();
         this.dateAnnoncement =   demande.getDateAnnoncement();
         this.localisation =   demande.getLocalisation();
+        if (demande.getUtilisateur() != null) {
+            this.utilisateur = new UserResponseDTO(demande.getUtilisateur());
+        }
     }
 
 
