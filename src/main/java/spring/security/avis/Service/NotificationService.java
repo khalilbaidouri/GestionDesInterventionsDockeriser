@@ -95,6 +95,8 @@ public class NotificationService {
             listNotif.add(notification);
         }
 
+        listNotif.sort((n1, n2) -> n2.getDateEnvoi().compareTo(n1.getDateEnvoi()));
+
         return listNotif;
     }
 

@@ -21,7 +21,9 @@ import spring.security.avis.entity.User;
 
 import java.nio.file.AccessDeniedException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author $ {USERS}
@@ -114,13 +116,13 @@ public class DemandeController {
         return ResponseEntity.ok(listDemande);
     }
     @GetMapping("/getAllDemande")
-    public ResponseEntity<List<DemandeInterventionDTO>> getAllDemande(){
-        List<DemandeIntervention> alldemande = demandeInterventionRepository.findAll();
-        List<DemandeInterventionDTO> dtos = new ArrayList<>();
-        for (DemandeIntervention demande : alldemande) {
-            DemandeInterventionDTO dto = new DemandeInterventionDTO(demande);
-            dtos.add(dto);
-        }
+    public ResponseEntity<List<DemandeInterventionDTO>> getAllDemande() {
+        List<DemandeInterventionDTO> dtos = demandeInterventionRepository.findAll()
+                .stream()
+                .sorted(Comparator.comparing(DemandeIntervention::getDateAnnoncement).reversed())
+                .map(DemandeInterventionDTO::new)
+                .collect(Collectors.toList());
+
         return ResponseEntity.ok(dtos);
     }
 
@@ -155,6 +157,7 @@ public class DemandeController {
                if (demande.getUtilisateur() != null) {
                    dto.setUtilisateur(new UserResponseDTO(demande.getUtilisateur()));
                }
+
 
                dtos.add(dto);
            }

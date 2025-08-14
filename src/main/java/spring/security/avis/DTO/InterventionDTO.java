@@ -30,6 +30,7 @@ public class InterventionDTO {
         private Long dureeReelle;
         private String localisation;
         private TypeIntervention typeIntervention;
+        private UserResponseDTO ingenieur;
 
         public InterventionDTO(Intervention intervention) {
                 this.id = intervention.getId();
@@ -44,6 +45,10 @@ public class InterventionDTO {
                 this.dureeReelle = intervention.getDureeReelle();
                 this.localisation = intervention.getLocalisation();
                 this.typeIntervention = intervention.getTypeIntervention();
+                if (intervention.getIngenieur() != null) {
+                        this.ingenieur = new UserResponseDTO(intervention.getIngenieur());
+                }
+
         }
 
 

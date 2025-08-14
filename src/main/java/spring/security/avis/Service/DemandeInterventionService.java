@@ -15,9 +15,8 @@ import spring.security.avis.entity.*;
 import java.nio.file.AccessDeniedException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author $ {USERS}
@@ -208,7 +207,6 @@ public class DemandeInterventionService {
         List<DemandeIntervention> demandeInterventions = demandeInterventionRepository.findByPriorite(etat);
         return demandeInterventions;
     }
-
     public List<DemandeIntervention> getMesDemande() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -223,7 +221,10 @@ public class DemandeInterventionService {
             throw new RuntimeException("Utilisateur introuvable");
         }
 
-        return demandeInterventionRepository.findByUtilisateur(utilisateur);
+        return demandeInterventionRepository.findByUtilisateur(utilisateur).stream()
+                .filter(demande -> demande.getStatut() == StatutDemande.EN_ATTENTE)
+                .sorted(Comparator.comparing(DemandeIntervention::getDateAnnoncement).reversed())
+                .collect(Collectors.toList());
     }
 
     public void refuserDemande(Long idDemande) {
