@@ -91,5 +91,7 @@ public interface InterventionRepository extends JpaRepository<Intervention, Long
 
 
 
+    List<Intervention> findAllByOrderByIdDesc();
+
 
 }

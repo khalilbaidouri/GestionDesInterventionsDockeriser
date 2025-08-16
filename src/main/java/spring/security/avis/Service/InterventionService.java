@@ -287,7 +287,7 @@ public List<Intervention> getInterventionByStatut(StatutIntervention statut) thr
 
 
     public List<InterventionDTO> getAllInterventions() {
-        List<Intervention> interventions = interventionRepository.findAll();
+        List<Intervention> interventions = interventionRepository.findAllByOrderByIdDesc();
         List<InterventionDTO> dtos = new ArrayList<>();
 
         for (Intervention intervention : interventions) {
@@ -296,6 +296,7 @@ public List<Intervention> getInterventionByStatut(StatutIntervention statut) thr
 
         return dtos;
     }
+
 
     public List<InterventionDTO> getInterventionsByIngenieur(Long id) {
         List<Intervention> interventions = interventionRepository.findByIngenieurId(id);

@@ -22,6 +22,7 @@ import spring.security.avis.Service.InterventionService;
 import spring.security.avis.Service.UserService;
 import spring.security.avis.entity.User;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -110,13 +111,41 @@ public class UserController {
         return ResponseEntity.ok(userRequestDTO);
     }
 
-    @PostMapping("/alterPassword")
+ /*   @PostMapping("/alterPassword")
     public void alterPassword(@RequestBody Map<String,String> parametre) {
         this.userService.alterPassword(parametre);
     }
     @PostMapping("/newPassword")
     public void newPassword(@RequestBody Map<String,String> parametre) {
         this.userService.newPassword(parametre);
+    }*/
+
+    @PostMapping("/alterPassword")
+    public ResponseEntity<Map<String, String>> alterPassword(@RequestBody Map<String,String> parametre) {
+        try {
+            this.userService.alterPassword(parametre);
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Reset code sent successfully");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "Failed to send reset code");
+            return ResponseEntity.badRequest().body(error);
+        }
+    }
+
+    @PostMapping("/newPassword")
+    public ResponseEntity<Map<String, String>> newPassword(@RequestBody Map<String,String> parametre) {
+        try {
+            this.userService.newPassword(parametre);
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Password reset successfully");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "Failed to reset password");
+            return ResponseEntity.badRequest().body(error);
+        }
     }
 
     @PutMapping("/modifierProfil")
