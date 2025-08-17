@@ -165,7 +165,7 @@ public class InterventionController {
         }
     }
 
-    @PutMapping("/interventions/{id}/valider")
+        @PutMapping("/interventions/{id}/ ")
     public ResponseEntity<?> validerTache(@PathVariable Long id) {
         try {
             interventionService.validerTache(id);
