@@ -102,6 +102,8 @@ public class InterventionService {
             String username = authentication.getName();
 
             User utilisateur = userRepository.findByEmail(username);
+            User admin = userRepository.findByEmail("admin@gmail.com");
+            User chefDepartement =  userRepository.findByEmail("chefDepartemant@gmail.com");
 
             Intervention intervention = interventionRepository.findById(idIntervention)
                     .orElseThrow(() -> new RuntimeException("Intervention non trouvee"));
@@ -110,9 +112,31 @@ public class InterventionService {
                 throw new AccessDeniedException("Vous n'etes pas autorise à commencer cette intervention");
             }
 
+            Notification notifAdmin = new Notification();
+            notifAdmin.setDestinataire(admin);
+            notifAdmin.setType(TypeNotification.INTERVENTION_COMMENCER);
+            notifAdmin.setStatut(StatutNotification.NON_LUE);
+            notifAdmin.setMessage("L'intervention #" + intervention.getId() + " "
+                    + intervention.getDescription() + " dans la position " + intervention.getLocalisation()+"est commencer");
+            notifAdmin.setDateEnvoi(LocalDateTime.now());
+            notificationRepository.save(notifAdmin);
+
+            Notification notifChef = new Notification();
+            notifChef.setDestinataire(chefDepartement);
+            notifChef.setType(TypeNotification.INTERVENTION_COMMENCER);
+            notifChef.setStatut(StatutNotification.NON_LUE);
+            notifChef.setMessage("L'intervention #" + intervention.getId() + " "
+                    + intervention.getDescription() + " dans la position " + intervention.getLocalisation()+"est commencer");
+            notifChef.setDateEnvoi(LocalDateTime.now());
+            notificationRepository.save(notifChef);
+
+
             intervention.setDateDebutReelle(LocalDateTime.now());
             intervention.setStatut(StatutIntervention.EN_COURS);
-            return interventionRepository.save(intervention);
+
+
+
+        return interventionRepository.save(intervention);
         }
 
     public Intervention terminerIntervention(Long idIntervention , String rapport) throws AccessDeniedException {
@@ -120,6 +144,8 @@ public class InterventionService {
         String username = authentication.getName();
 
         User utilisateur = userRepository.findByEmail(username);
+        User admin = userRepository.findByEmail("admin@gmail.com");
+        User chefDepartement =  userRepository.findByEmail("chefDepartemant@gmail.com");
 
         Intervention intervention = interventionRepository.findById(idIntervention)
                 .orElseThrow(() -> new RuntimeException("Intervention non trouvee"));
@@ -146,6 +172,25 @@ public class InterventionService {
         historiqueIntervention.setLocalisation(intervention.getLocalisation());
         historiqueIntervention.setStatut(StatutIntervention.TERMINEE);
         historiqueInterventionRepository.save(historiqueIntervention);
+
+        Notification notifAdmin = new Notification();
+        notifAdmin.setDestinataire(admin);
+        notifAdmin.setType(TypeNotification.INTERVENTION_COMMENCER);
+        notifAdmin.setStatut(StatutNotification.NON_LUE);
+        notifAdmin.setMessage("L'intervention #" + intervention.getId() + " "
+                + intervention.getDescription() + " dans la position " + intervention.getLocalisation()+"est terminer");
+        notifAdmin.setDateEnvoi(LocalDateTime.now());
+        notificationRepository.save(notifAdmin);
+
+        Notification notifChef = new Notification();
+        notifChef.setDestinataire(chefDepartement);
+        notifChef.setType(TypeNotification.INTERVENTION_COMMENCER);
+        notifChef.setStatut(StatutNotification.NON_LUE);
+        notifChef.setMessage("L'intervention #" + intervention.getId() + " "
+                + intervention.getDescription() + " dans la position " + intervention.getLocalisation()+"est terminer");
+        notifChef.setDateEnvoi(LocalDateTime.now());
+        notificationRepository.save(notifChef);
+
         return interventionRepository.save(intervention);
     }
 
@@ -154,6 +199,8 @@ public class InterventionService {
         String username = authentication.getName();
 
         User utilisateur = userRepository.findByEmail(username);
+        User admin = userRepository.findByEmail("admin@gmail.com");
+        User chefDepartement =  userRepository.findByEmail("chefDepartemant@gmail.com");
 
         Intervention intervention = interventionRepository.findById(idIntervention)
                 .orElseThrow(() -> new RuntimeException("Intervention non trouvee"));
@@ -178,6 +225,24 @@ public class InterventionService {
         historiqueIntervention.setUtilisateur(intervention.getIngenieur());
         historiqueIntervention.setLocalisation(intervention.getLocalisation());
         historiqueIntervention.setStatut(StatutIntervention.ECHEC);
+
+        Notification notifAdmin = new Notification();
+        notifAdmin.setDestinataire(admin);
+        notifAdmin.setType(TypeNotification.INTERVENTION_COMMENCER);
+        notifAdmin.setStatut(StatutNotification.NON_LUE);
+        notifAdmin.setMessage("L'intervention #" + intervention.getId() + " "
+                + intervention.getDescription() + " dans la position " + intervention.getLocalisation()+"est echouer");
+        notifAdmin.setDateEnvoi(LocalDateTime.now());
+        notificationRepository.save(notifAdmin);
+
+        Notification notifChef = new Notification();
+        notifChef.setDestinataire(chefDepartement);
+        notifChef.setType(TypeNotification.INTERVENTION_COMMENCER);
+        notifChef.setStatut(StatutNotification.NON_LUE);
+        notifChef.setMessage("L'intervention #" + intervention.getId() + " "
+                + intervention.getDescription() + " dans la position " + intervention.getLocalisation()+"est echouer");
+        notifChef.setDateEnvoi(LocalDateTime.now());
+        notificationRepository.save(notifChef);
 
         historiqueInterventionRepository.save(historiqueIntervention);
         return interventionRepository.save(intervention);
@@ -271,14 +336,13 @@ public List<Intervention> getInterventionByStatut(StatutIntervention statut) thr
         intervention.setDateDebut(nouvelleDateDebut);
         intervention.setDateFin(nouvelleDateFin);
         intervention.setDateFinalReelle(null);
-        intervention.setDateDebutReelle(null);
         intervention.setStatut(StatutIntervention.REFAIRE);
 
         interventionRepository.save(intervention);
 
         Notification notification = new Notification();
         notification.setDateEnvoi(LocalDateTime.now());
-        notification.setType(TypeNotification.RAPPEL);
+        notification.setType(TypeNotification.INTERVENTION_REFAIRE);
         notification.setStatut(StatutNotification.NON_LUE);
         notification.setMessage(message);
         notification.setDestinataire(technicien);

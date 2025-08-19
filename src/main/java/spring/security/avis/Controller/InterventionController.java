@@ -5,7 +5,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import spring.security.avis.DTO.InterventionDTO;
@@ -126,11 +129,12 @@ public class InterventionController {
         return ResponseEntity.ok(interventionDTOS);
     }
 
-    @PutMapping("/interventions/{id}/refaire")
+    @PutMapping("/{id}/refaire")
     public ResponseEntity<String> tacheARefaire(
             @PathVariable Long id,
             @RequestBody Map<String, String> body) {
-
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println("User authorities: " + authentication.getAuthorities());
         String message = body.get("message");
         String dateDebutStr = body.get("dateDebut");
         String dateFinStr = body.get("dateFin");
@@ -165,8 +169,8 @@ public class InterventionController {
         }
     }
 
-        @PutMapping("/interventions/{id}/ ")
-    public ResponseEntity<?> validerTache(@PathVariable Long id) {
+        @PutMapping("/{id}/valider")
+        public ResponseEntity<?> validerTache(@PathVariable Long id) {
         try {
             interventionService.validerTache(id);
             return ResponseEntity.ok("Intervention validee avec succès.");

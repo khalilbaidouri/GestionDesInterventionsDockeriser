@@ -18,6 +18,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import spring.security.avis.Enum.TypeRole;
 
 import java.util.List;
 
@@ -50,6 +51,8 @@ public class ConfigSecurite {
                                 .requestMatchers(HttpMethod.POST,"/alterPassword").permitAll()
                                 .requestMatchers(HttpMethod.POST,"/refreshToken").permitAll()
                                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                                .requestMatchers(HttpMethod.PUT, "/interventions/*/refaire").permitAll() // ✅ AJOUTER CETTE LIGNE
+
                                 .requestMatchers("/mesInfo").authenticated()
                                 .anyRequest().authenticated()
                 )

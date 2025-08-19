@@ -62,6 +62,18 @@ public class DemoApplication implements CommandLineRunner {
 		if (userRepo.findByEmail("ingenieur@gmail.com") == null) {
 			userRepo.save(ingenieur);
 		}
+		Role chefDepartemantRole = Role.builder().libelle(TypeRole.CHEF_DE_DEPARTEMENT).build();
+		User chefDepartemant = User.builder()
+				.active(true)
+				.nom("chefDepartemant")
+				.prenom("chefDepartemant")
+				.password(passwordEncoder.encode("chefDepartemant"))
+				.email("chefDepartemant@gmail.com")
+				.role(chefDepartemantRole)
+				.build();
+		if (userRepo.findByEmail("chefDepartemant@gmail.com") == null) {
+			userRepo.save(chefDepartemant);
+		}
 	}
 
 }
