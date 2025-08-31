@@ -23,7 +23,7 @@ Content-Type: application/json
 ###
 // CONNEXION
 ###
-POST http://localhost:8090/api/connexion
+POST http://localhost:8080/api/connexion
 Content-Type: application/json
 
 {
