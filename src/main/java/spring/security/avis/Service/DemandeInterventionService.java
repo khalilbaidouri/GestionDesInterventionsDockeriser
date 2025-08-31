@@ -120,6 +120,7 @@ public class DemandeInterventionService {
         intervention.setPriorite(demande.getPriorite());
         intervention.setStatut(StatutIntervention.ACCEPTE);
         intervention.setLocalisation(demande.getLocalisation());
+        intervention.setTypeIntervention(demande.getTypeIntervention());
 
         Calendrier calendrier = calendrierService.getCalendrierUnique();
         intervention.setCalendrier(calendrier);
