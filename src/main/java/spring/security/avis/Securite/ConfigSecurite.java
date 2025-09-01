@@ -65,7 +65,7 @@ public class ConfigSecurite {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(
-                List.of("http://localhost:3000", "https://taskflow-online-six.vercel.app")
+                List.of("http://localhost:3000", "https://taskflow-black.vercel.app")
         );
 
 
