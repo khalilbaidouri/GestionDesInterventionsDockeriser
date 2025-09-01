@@ -64,8 +64,9 @@ public class ConfigSecurite {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-
         configuration.setAllowedOrigins(List.of("http://localhost:3000", "https://ton-frontend.vercel.app"));
+
+
         // L'URL de votre app React
         //                        .allowedOrigins("https://ton-frontend.vercel.app") // mets l'URL de ton frontend
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
