@@ -32,6 +32,8 @@ public class DemoApplication implements CommandLineRunner {
 				.password(passwordEncoder.encode("admin"))
 				.email("admin@gmail.com")
 				.role(adminRole)
+				.matricule("a23182010")
+
 				.build();
 		if (userRepo.findByEmail("admin@gmail.com") == null) {
 			userRepo.save(admin);
@@ -45,6 +47,7 @@ public class DemoApplication implements CommandLineRunner {
 				.password(passwordEncoder.encode("manager"))
 				.email("manager@gmail.com")
 				.role(managerRole)
+				.matricule("a123456789")
 				.build();
 		if (userRepo.findByEmail("manager@gmail.com") == null) {
 			userRepo.save(manager);
@@ -58,6 +61,7 @@ public class DemoApplication implements CommandLineRunner {
 				.password(passwordEncoder.encode("ingenieur"))
 				.email("ingenieur@gmail.com")
 				.role(ingenieurRole)
+				.matricule("a329010923")
 				.build();
 		if (userRepo.findByEmail("ingenieur@gmail.com") == null) {
 			userRepo.save(ingenieur);
@@ -70,6 +74,7 @@ public class DemoApplication implements CommandLineRunner {
 				.password(passwordEncoder.encode("chefDepartemant"))
 				.email("chefDepartemant@gmail.com")
 				.role(chefDepartemantRole)
+				.matricule("a21830231")
 				.build();
 		if (userRepo.findByEmail("chefDepartemant@gmail.com") == null) {
 			userRepo.save(chefDepartemant);
