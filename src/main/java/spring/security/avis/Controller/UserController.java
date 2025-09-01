@@ -190,4 +190,9 @@ public class UserController {
         return ResponseEntity.ok(userService.listerUsers());
     }
 
+    @GetMapping("/test")
+    public String test() {
+        return "API en ligne !";
+    }
+
 }
