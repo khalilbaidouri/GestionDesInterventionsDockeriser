@@ -64,7 +64,9 @@ public class ConfigSecurite {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000", "https://ton-frontend.vercel.app"));
+        configuration.setAllowedOrigins(
+                List.of("http://localhost:3000", "https://taskflow-online-six.vercel.app")
+        );
 
 
         // L'URL de votre app React
