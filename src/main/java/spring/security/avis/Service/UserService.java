@@ -65,6 +65,7 @@ public class UserService implements UserDetailsService {
         user.setNom(userRequestDTO.getNom());
         user.setPrenom(userRequestDTO.getPrenom());
         user.setMatricule(userRequestDTO.getMatricule());
+        user.setActive(true);
 
         String encodedPassword = bCryptPasswordEncoder.encode(userRequestDTO.getPassword());
         user.setPassword(encodedPassword);
