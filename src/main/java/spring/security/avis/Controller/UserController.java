@@ -134,10 +134,29 @@ public class UserController {
         }
     }
 
+//    @PostMapping("/newPassword")
+//    public ResponseEntity<Map<String, String>> newPassword(@RequestBody Map<String,String> parametre) {
+//        try {
+//            this.userService.newPassword(parametre);
+//            Map<String, String> response = new HashMap<>();
+//            response.put("message", "Password reset successfully");
+//            return ResponseEntity.ok(response);
+//        } catch (Exception e) {
+//            Map<String, String> error = new HashMap<>();
+//            error.put("error", "Failed to reset password");
+//            return ResponseEntity.badRequest().body(error);
+//        }
+//    }
+
+    // Controller - Correction minimale
     @PostMapping("/newPassword")
     public ResponseEntity<Map<String, String>> newPassword(@RequestBody Map<String,String> parametre) {
         try {
+            // CORRECTION 1: Nettoyer le code (supprimer les espaces)
+            parametre.put("code", parametre.get("code").trim());
+
             this.userService.newPassword(parametre);
+
             Map<String, String> response = new HashMap<>();
             response.put("message", "Password reset successfully");
             return ResponseEntity.ok(response);

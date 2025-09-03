@@ -41,6 +41,9 @@ public class ValidationService {
         this.validationRepo.save(validation);
         this.notificationService.envoyer(validation);
     }
+    public void save(Validation validation) {
+        validationRepo.save(validation);
+    }
 
     public Validation getValidationByCode(String code) {
        return this.validationRepo.findByCode(code).orElseThrow(() ->

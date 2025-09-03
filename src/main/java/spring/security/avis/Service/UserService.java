@@ -119,15 +119,36 @@ public class UserService implements UserDetailsService {
         User user = (User) this.loadUserByUsername(parametre.get("email"));
         this.validationService.enregitrer(user);
     }
+//
+//    public void newPassword(Map<String, String> parametre) {
+//        User user = (User) this.loadUserByUsername(parametre.get("email"));
+//        Validation validation = validationService.getValidationByCode(parametre.get("code"));
+//        if (validation.getUser().getUsername().equals(user.getUsername())) {
+//            String newPassword = bCryptPasswordEncoder.encode(parametre.get("password"));
+//            user.setPassword(newPassword);
+//            validation.setDateActviation(Instant.now());
+//            this.userRepo.save(user);
+//        }
+//    }
 
+
+
+    // Service - Corrections minimales
     public void newPassword(Map<String, String> parametre) {
         User user = (User) this.loadUserByUsername(parametre.get("email"));
         Validation validation = validationService.getValidationByCode(parametre.get("code"));
-        if (validation.getUser().getUsername().equals(user.getUsername())) {
+
+        // CORRECTION 2: Vérifier que la validation n'est pas null
+        if (validation != null && validation.getUser().getUsername().equals(user.getUsername())) {
             String newPassword = bCryptPasswordEncoder.encode(parametre.get("password"));
             user.setPassword(newPassword);
             validation.setDateActviation(Instant.now());
             this.userRepo.save(user);
+
+            // CORRECTION 3: Sauvegarder la validation modifiée
+            validationService.save(validation);
+        } else {
+            throw new RuntimeException("Invalid validation code");
         }
     }
 
