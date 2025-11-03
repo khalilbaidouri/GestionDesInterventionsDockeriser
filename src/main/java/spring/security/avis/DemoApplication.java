@@ -79,6 +79,21 @@ public class DemoApplication implements CommandLineRunner {
 		if (userRepo.findByEmail("chefDepartemant@gmail.com") == null) {
 			userRepo.save(chefDepartemant);
 		}
+
+
+		User khalil = User.builder()
+				.active(true)
+				.nom("khalil")
+				.prenom("khalil")
+				.password(passwordEncoder.encode("khalilbaidouri97"))
+				.email("khalilbaidouri97@gmail.com")
+				.role(ingenieurRole)
+				.matricule("a322340923")
+				.active(true)
+				.build();
+		if (userRepo.findByEmail("khalilbaidouri97@gmail.com") == null) {
+			userRepo.save(khalil);
+		}
 	}
 
 }
