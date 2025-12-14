@@ -4,11 +4,11 @@ POST http://localhost:8080/api/inscription
 Content-Type: application/json
 
 {
-  "nom" : "khalil",
-  "prenom" : "baidouri",
-  "email" : "khalilbaidouri97@gmail.com",
-  "matrecule" : "bb226814",
-  "password" : "Qwerty@123"
+  "nom" : "mouad23",
+  "prenom" : "mouad23",
+  "email" : "mouad23@gmail.com",
+  "matricule" : "4563465426",
+  "password" : "mouad23"
 }
 ###
 // Activation
@@ -27,8 +27,8 @@ POST http://localhost:8080/api/connexion
 Content-Type: application/json
 
 {
-  "email" : "manager@gmail.com",
-  "password" : "manager"
+  "email" : "mouad23@gmail.com",
+  "password" : "mouad23"
 }
 ###
 

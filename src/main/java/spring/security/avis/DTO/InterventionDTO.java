@@ -34,7 +34,7 @@ public class InterventionDTO {
 
         public InterventionDTO(Intervention intervention) {
                 this.id = intervention.getId();
-                Description = intervention.getDescription();
+                this.Description = intervention.getDescription();
                 this.dateDebut = intervention.getDateDebut();
                 this.dateFin = intervention.getDateFin();
                 this.dateFinalReelle = intervention.getDateFinalReelle();
