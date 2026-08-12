@@ -125,9 +125,9 @@ public class JwtService {
 
         Map<String, Object> claims = Map.of(
                 "username", user.getUsername(),
-                "password", user.getPassword(),
-                Claims.EXPIRATION,new Date(experationTime),
-                Claims.SUBJECT , user.getUsername()
+                "role", user.getRole().getLibelle(),
+                Claims.EXPIRATION, new Date(experationTime),
+                Claims.SUBJECT, user.getUsername()
         );
 
         String bearer = Jwts.builder()
