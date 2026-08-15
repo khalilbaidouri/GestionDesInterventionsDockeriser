@@ -49,6 +49,7 @@ public class ConfigSecurite {
                                 .requestMatchers("/interventions/*/rapport").permitAll()
                                 .requestMatchers(HttpMethod.POST,"/newPassword").permitAll()
                                 .requestMatchers(HttpMethod.POST,"/alterPassword").permitAll()
+                                .requestMatchers(HttpMethod.GET,"/health").permitAll()
                                 .requestMatchers(HttpMethod.POST,"/refreshToken").permitAll()
                                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                                 .requestMatchers(HttpMethod.PUT, "/interventions/*/refaire").permitAll() // ✅ AJOUTER CETTE LIGNE
